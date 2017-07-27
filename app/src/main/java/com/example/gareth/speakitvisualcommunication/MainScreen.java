@@ -3,7 +3,6 @@ package com.example.gareth.speakitvisualcommunication;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.GridView;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public class MainScreen extends AppCompatActivity {
     }
 
     private PecsImages[] categories = {
-            new PecsImages(R.string.At_Home, R.mipmap.ic_launcher),
+            new PecsImages(R.string.At_Home, R.drawable.home),
             new PecsImages(R.string.About_Me, R.mipmap.ic_launcher),
             new PecsImages(R.string.Food_And_Drink, R.mipmap.ic_launcher),
             new PecsImages(R.string.Greetings, R.mipmap.ic_launcher),

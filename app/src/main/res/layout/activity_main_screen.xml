@@ -11,10 +11,10 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:columnWidth="100dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="24dp"
+        android:numColumns="2"
+        android:verticalSpacing="20dp"
         android:horizontalSpacing="10dp"
-        android:stretchMode="spacingWidthUniform" />
+        android:stretchMode="columnWidth"/>
 
 
 </RelativeLayout>

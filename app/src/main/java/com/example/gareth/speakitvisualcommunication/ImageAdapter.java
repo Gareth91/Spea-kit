@@ -77,7 +77,7 @@ public class ImageAdapter extends BaseAdapter {
         // view holder pattern
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image, null);
+            convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image,null);
 
             final ImageView imageView = (ImageView)convertView.findViewById(R.id.imageview);
             final TextView wordView = (TextView)convertView.findViewById(R.id.wordText);
