@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import java.util.List;
 
 /**
@@ -78,13 +80,15 @@ public class ImageAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image, null);
 
             final ImageView imageView = (ImageView)convertView.findViewById(R.id.imageview);
+            final TextView wordView = (TextView)convertView.findViewById(R.id.wordText);
 
-            final ViewHolder viewHolder = new ViewHolder(imageView);
+            final ViewHolder viewHolder = new ViewHolder(imageView, wordView);
             convertView.setTag(viewHolder);
         }
 
         final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
         viewHolder.imageView.setImageResource(image.getImage());
+        viewHolder.textView.setText(mContext.getString(image.getWord()));
 
         return convertView;
     }
@@ -95,9 +99,11 @@ public class ImageAdapter extends BaseAdapter {
     private class ViewHolder {
 
         private final ImageView imageView;
+        private final TextView textView;
 
-        public ViewHolder(ImageView imageView) {
+        public ViewHolder(ImageView imageView, TextView textView) {
             this.imageView = imageView;
+            this.textView = textView;
         }
     }
 }

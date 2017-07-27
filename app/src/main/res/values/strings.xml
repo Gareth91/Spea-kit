@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Speakit Visual Communication</string>
+
+    <string name="At_Home">At Home</string>"
+    <string name="Food_And_Drink">Food and Drink</string>"
+    <string name="About_Me">About Me</string>"
+    <string name="Greetings">Greetings</string>"
+    <string name="Todays_Activities">Today\'s Activities</string>"
+    <string name="Leisure">Leisure</string>"
+    <string name="Favourites">Favourites</string>"
+    <string name="Add_Category">Add Category</string>
 </resources>
