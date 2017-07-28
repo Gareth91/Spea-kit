@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.gareth.speakitvisualcommunication.SecondScreen">
+
+    <GridView
+        android:id="@+id/gridviewSecond"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:gravity="center"
+        android:columnWidth="100dp"
+        android:numColumns="2"
+        android:verticalSpacing="15dp"
+        android:horizontalSpacing="10dp"
+        android:stretchMode="columnWidth"/>
+
+</RelativeLayout>

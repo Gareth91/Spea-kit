@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SecondScreen" />
+        <activity android:name=".ActionWords"
+            android:theme="@style/AppTheme.CustomTheme2">
+        </activity>
     </application>
 
 </manifest>

@@ -9,11 +9,10 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener{
+public class SecondScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener{
 
     //TTS object
     private TextToSpeech myTTS;
@@ -22,32 +21,48 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     private int MY_DATA_CHECK_CODE = 0;
 
     //
-    private List<PecsImages> imageCategories;
+    private List<PecsImages> imageWords;
 
-    //
-    private PecsImages[] categories = {
-            new PecsImages(R.string.Add_Category, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Favourites, R.mipmap.ic_launcher),
-            new PecsImages(R.string.At_Home, R.drawable.home),
-            new PecsImages(R.string.About_Me, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Food_And_Drink, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Greetings, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Leisure, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Todays_Activities, R.mipmap.ic_launcher)
-    };
-
-    /**
-     *
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_screen);
+        setContentView(R.layout.activity_second_screen);
 
-        imageCategories = new ArrayList<>(Arrays.asList(categories));
-        final GridView gridView = (GridView)findViewById(R.id.gridview);
-        final ImageAdapter imageAdapter = new ImageAdapter(this, imageCategories);
+        imageWords = new ArrayList<>();
+        imageWords.clear();
+        PecsImages image = new PecsImages(R.string.Action_Words,R.mipmap.ic_launcher);
+        imageWords.add(image);
+
+        Intent intent = getIntent();
+        String category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
+        switch (category){
+            case "Add Category":
+                break;
+            case "Favourites":
+                break;
+            case "At Home":
+                break;
+            case "About Me":
+                break;
+            case "Food and Drink":
+                break;
+            case "Greetings":
+                PecsImages image2 = new PecsImages(R.string.Good_Morning,R.mipmap.ic_launcher);
+                imageWords.add(image2);
+                break;
+            case "Leisure":
+                break;
+            case "Today's Activities":
+                break;
+            default:
+                break;
+
+
+        }
+
+
+        final GridView gridView = (GridView)findViewById(R.id.gridviewSecond);
+        final ImageAdapter imageAdapter = new ImageAdapter(this, imageWords);
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(this);
 
@@ -58,7 +73,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
     }
 
-
     /**
      *
      * @param parent
@@ -68,12 +82,13 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PecsImages image = imageCategories.get(position);
+        PecsImages image = imageWords.get(position);
         speakWords(getString(image.getWord()));
+        if (getString(image.getWord()).equals("Action Words")) {
+            Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
+            startActivity(actionWords);
 
-        Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
-        intent.putExtra("com.example.gareth.speakitvisualcommunication.Category",getString(image.getWord()));
-        startActivity(intent);
+        }
 
     }
 
@@ -125,4 +140,3 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     }
 
 }
-
