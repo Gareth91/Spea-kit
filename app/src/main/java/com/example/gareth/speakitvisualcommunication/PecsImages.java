@@ -9,7 +9,7 @@ public class PecsImages {
     /**
      * The word to be spoken
      */
-    private int word;
+    private String word;
 
     /**
      * The PECS image associated with the word to be spoken
@@ -29,7 +29,7 @@ public class PecsImages {
      * @param word  - The word to be spoken
      * @param image - The PECS image associated with the word to be spoken
      */
-    public PecsImages(int word, int image) {
+    public PecsImages(String word, int image) {
         this.word = word;
         this.image = image;
     }
@@ -38,7 +38,7 @@ public class PecsImages {
      * The word to be spoken
      * @return a String representing a word
      */
-    public int getWord() {
+    public String getWord() {
         return word;
     }
 
@@ -47,7 +47,7 @@ public class PecsImages {
      * @param word
      *      - A word which will be spoken
      */
-    public void setWord(int word) {
+    public void setWord(String word) {
         this.word = word;
     }
 

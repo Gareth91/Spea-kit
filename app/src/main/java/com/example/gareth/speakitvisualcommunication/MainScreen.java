@@ -26,15 +26,17 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
     //
     private PecsImages[] categories = {
-            new PecsImages(R.string.Add_Category, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Favourites, R.mipmap.ic_launcher),
-            new PecsImages(R.string.At_Home, R.drawable.home),
-            new PecsImages(R.string.About_Me, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Food_And_Drink, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Greetings, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Leisure, R.mipmap.ic_launcher),
-            new PecsImages(R.string.Todays_Activities, R.mipmap.ic_launcher)
+            new PecsImages("Add Category", R.mipmap.ic_launcher),
+            new PecsImages("Favourites", R.mipmap.ic_launcher),
+            new PecsImages("At Home", R.drawable.home),
+            new PecsImages("About Me", R.mipmap.ic_launcher),
+            new PecsImages("Food And Drink", R.mipmap.ic_launcher),
+            new PecsImages("Greetings", R.mipmap.ic_launcher),
+            new PecsImages("Leisure", R.mipmap.ic_launcher),
+            new PecsImages("Today's Activities", R.mipmap.ic_launcher)
     };
+
+
 
     /**
      *
@@ -69,10 +71,10 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         PecsImages image = imageCategories.get(position);
-        speakWords(getString(image.getWord()));
+        speakWords(image.getWord());
 
         Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
-        intent.putExtra("com.example.gareth.speakitvisualcommunication.Category",getString(image.getWord()));
+        intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
         startActivity(intent);
 
     }

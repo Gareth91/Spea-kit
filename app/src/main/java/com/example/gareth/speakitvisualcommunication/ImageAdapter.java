@@ -88,7 +88,7 @@ public class ImageAdapter extends BaseAdapter {
 
         final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
         viewHolder.imageView.setImageResource(image.getImage());
-        viewHolder.textView.setText(mContext.getString(image.getWord()));
+        viewHolder.textView.setText(image.getWord());
 
         return convertView;
     }
