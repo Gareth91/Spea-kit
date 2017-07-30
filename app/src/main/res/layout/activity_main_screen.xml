@@ -3,22 +3,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     tools:context="com.example.gareth.speakitvisualcommunication.MainScreen">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_height="80dp"
+        android:layout_width="325dp"
+        android:background="@drawable/sentence_builder_border"
+        />
+
+    <ImageButton
+        android:id="@+id/speakB"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/sentence_builder_border"
+        android:src="@drawable/play"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/recyclerView" />
+
+    <ImageButton
+        android:id="@+id/deleteB"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/sentence_builder_border"
+        android:src="@drawable/delete"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/recyclerView"
+        android:layout_below="@+id/speakB" />
 
     <GridView
         android:id="@+id/gridview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:layout_marginTop="3dp"
-        android:layout_marginBottom="3dp"
+        android:layout_height="590dp"
         android:gravity="center"
         android:columnWidth="100dp"
         android:numColumns="2"
         android:verticalSpacing="15dp"
         android:horizontalSpacing="10dp"
-        android:stretchMode="columnWidth"/>
+        android:paddingTop="3dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:stretchMode="columnWidth"
+        android:layout_below="@id/recyclerView"/>
 
 
 </RelativeLayout>

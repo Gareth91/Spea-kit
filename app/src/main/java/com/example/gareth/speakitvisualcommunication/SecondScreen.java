@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -28,6 +29,10 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second_screen);
 
+        //Set back button in the bar at the top of screen
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
         imageWords = new ArrayList<>();
         imageWords.clear();
         PecsImages image = new PecsImages(getString(R.string.Action_Words),R.mipmap.ic_launcher);
@@ -48,7 +53,11 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 break;
             case "Greetings":
                 PecsImages image2 = new PecsImages(getString(R.string.Good_Morning),R.mipmap.ic_launcher);
+                PecsImages image3 = new PecsImages("What's your name?",R.mipmap.ic_launcher);
+                PecsImages image4 = new PecsImages("See you later",R.mipmap.ic_launcher);
                 imageWords.add(image2);
+                imageWords.add(image3);
+                imageWords.add(image4);
                 break;
             case "Leisure":
                 break;
@@ -138,5 +147,22 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
         }
     }
+
+    /**
+     * Method for the selection of the home button
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
 }

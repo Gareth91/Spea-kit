@@ -72,16 +72,22 @@ public class ImageAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-       final PecsImages image = images.get(position);
+        final PecsImages image = images.get(position);
+        final ImageView imageView;
+        final TextView wordView;
 
         // view holder pattern
         if (convertView == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(mContext);
-            convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image,null);
-
-            final ImageView imageView = (ImageView)convertView.findViewById(R.id.imageview);
-            final TextView wordView = (TextView)convertView.findViewById(R.id.wordText);
-
+            if(mContext.getClass().equals(MainScreen.class)) {
+                convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image, null);
+                imageView = (ImageView) convertView.findViewById(R.id.imageview);
+                wordView = (TextView) convertView.findViewById(R.id.wordText);
+            } else {
+                convertView = layoutInflater.inflate(R.layout.activity_linear_layout_image2, null);
+                imageView = (ImageView) convertView.findViewById(R.id.imageview2);
+                wordView = (TextView) convertView.findViewById(R.id.wordText2);
+            }
             final ViewHolder viewHolder = new ViewHolder(imageView, wordView);
             convertView.setTag(viewHolder);
         }

@@ -6,26 +6,24 @@
     android:background="@drawable/grid_cells_border">
 
     <TextView
-        android:id="@+id/wordText"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_marginTop="10dp" />
+    android:id="@+id/wordText2"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:textSize="16sp"
+    android:textStyle="bold"
+    android:textAlignment="center"
+    android:layout_marginTop="10dp"/>
 
     <FrameLayout
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginBottom="5dp">
 
         <ImageView
-            android:id="@+id/imageview"
+            android:id="@+id/imageview2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY" />
-
     </FrameLayout>
-
 
 </LinearLayout>
