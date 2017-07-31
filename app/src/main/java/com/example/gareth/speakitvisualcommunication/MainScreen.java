@@ -113,30 +113,33 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //
         gridView.setOnItemClickListener(this);
 
+
         //
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final PecsImages image = imageCategories.get(position);
+                if (image.getNumber() != 1) {
+                    CharSequence[] items = {"Update", "Delete"};
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(MainScreen.this);
 
-                CharSequence[] items = {"Update", "Delete"};
-                AlertDialog.Builder dialog = new AlertDialog.Builder(MainScreen.this);
-
-                dialog.setTitle("Choose an action");
-                dialog.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int item) {
-                        List<Integer> arrID = new ArrayList<>();
-                        arrID = ops.queryData();
-                        if (item == 0) {
-                            // show dialog update at here
-                            showDialogUpdate(MainScreen.this, arrID.get(position));
-                        } else {
-                            showDialogDelete(arrID.get(position));
+                    dialog.setTitle("Choose an action");
+                    dialog.setItems(items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int item) {
+                            if (item == 0) {
+                                // show dialog update at here
+                                showDialogUpdate(MainScreen.this, image.getId());
+                            } else {
+                                showDialogDelete(image.getId());
+                            }
                         }
-                    }
-                });
-                dialog.show();
-                return true;
+                    });
+                    dialog.show();
+                    return true;
+                } else {
+                    return false;
+                }
             }
         });
 
@@ -236,9 +239,9 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     /**
      *
      * @param activity
-     * @param position
+     * @param id
      */
-    private void showDialogUpdate(Activity activity, final int position) {
+    private void showDialogUpdate(Activity activity, final int id) {
 
         final Dialog dialog = new Dialog(activity);
         dialog.setContentView(R.layout.update_pecs_images);
@@ -274,14 +277,13 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                     ops.updateData(
                             edtName.getText().toString().trim(),
                             Uploader.imageViewToByte(pecsView),
-                            position
+                            id
                     );
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Update successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
                 }
-                updatePecsList();
             }
         });
     }
@@ -315,7 +317,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
                 }
-                updatePecsList();
             }
         });
 
@@ -357,6 +358,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onResume();
         //Open database
         ops.open();
+        updatePecsList();
 
     }
 

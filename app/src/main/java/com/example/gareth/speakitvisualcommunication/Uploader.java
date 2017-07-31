@@ -28,7 +28,7 @@ public class Uploader extends AppCompatActivity {
 
     final int REQUEST_CODE_GALLERY = 999;
 
-    public static DatabaseOperations ops;
+    private DatabaseOperations ops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

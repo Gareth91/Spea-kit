@@ -72,23 +72,6 @@ public class DatabaseOperations {
         return imagesList;
     }
 
-    /**
-     * @param
-     */
-    public List<Integer> queryData() {
-        // get all data from sqlite
-        List<Integer> list = new ArrayList<>();
-        Cursor cursor = database.rawQuery("Select _id from "+SQLiteHelper.Table_Name, null);
-        //if there are images present
-        if(cursor.getCount() > 0) {
-            //Move to the first row
-            cursor.moveToFirst();
-            do {
-                list.add(cursor.getInt(0));
-            } while (cursor.moveToNext());
-        }
-        return list;
-    }
 
     /**
      * @param word
