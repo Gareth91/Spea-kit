@@ -17,9 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".SecondScreen" />
-        <activity android:name=".ActionWords"
-            android:theme="@style/AppTheme.CustomTheme2">
-        </activity>
+        <activity
+            android:name=".ActionWords"
+            android:theme="@style/AppTheme.CustomTheme2"></activity>
+        <activity android:name=".Uploader"></activity>
     </application>
 
 </manifest>

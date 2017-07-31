@@ -17,6 +17,51 @@ public class PecsImages {
     private int image;
 
     /**
+     * PECS image Byte Code
+     * Anthony
+     */
+    private byte[]images;
+
+    /**
+     * ID for accessing Images
+     * Anthony
+     */
+    private int id;
+
+    /**
+     * gets the Image
+     * Anthony
+     * @return
+     */
+    public byte[] getImages() {
+        return images;
+    }
+
+    /**
+     * sets the Image
+     * @param images
+     */
+    public void setImages(byte[] images) {
+        this.images = images;
+    }
+
+    /**
+     * gets the image ID
+     * @return
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * sets the Image ID
+     * @param id
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
      * Default Constructor that takes no arguments
      */
     public PecsImages() {
@@ -32,6 +77,19 @@ public class PecsImages {
     public PecsImages(String word, int image) {
         this.word = word;
         this.image = image;
+    }
+
+    /**
+     * Created by Anthony
+     * Constructor to handle the image byte code, word and ID
+     * @param word
+     * @param images
+     * @param id
+     */
+    public PecsImages(String word, byte[] images, int id) {
+        this.word = word;
+        this.images = images;
+        this.id = id;
     }
 
     /**
@@ -66,6 +124,7 @@ public class PecsImages {
     public void setImage(int image) {
         this.image = image;
     }
+
 }
 
 
