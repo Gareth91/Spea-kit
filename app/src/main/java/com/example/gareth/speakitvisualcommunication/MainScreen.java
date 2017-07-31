@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -292,11 +294,22 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      *
      */
     private void updatePecsList() {
+        boolean add = true;
         // get all data from sqlite
-        list.clear();
         list = ops.getData();
-        imageCategories.addAll(list);
-        imageAdapter.notifyDataSetChanged();
+        for(PecsImages image : imageCategories) {
+            for(PecsImages image2 : list) {
+                if (image.getNumber() != 1 && image.getId() == image2.getId()) {
+                    add = false;
+                    break;
+                }
+            }
+        }
+        if (add == true) {
+            imageCategories.addAll(list);
+            imageAdapter.notifyDataSetChanged();
+        }
+
     }
 
     /**
@@ -313,7 +326,16 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             public void onClick(DialogInterface dialog, int which) {
                 try {
                     ops.deleteData(idPecs);
+                    Iterator<PecsImages> iterator = imageCategories.iterator();
+                    while (iterator.hasNext()) {
+                        if(iterator.next().getId() == idPecs) {
+                            iterator.remove();
+                            imageAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
                     Toast.makeText(getApplicationContext(), "Delete successfully!!!", Toast.LENGTH_SHORT).show();
+
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
                 }
@@ -359,7 +381,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //Open database
         ops.open();
         updatePecsList();
-
     }
 
     /**
