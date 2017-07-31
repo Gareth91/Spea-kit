@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,8 +23,32 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     //status check code
     private int MY_DATA_CHECK_CODE = 0;
 
-    //
+    /**
+     *
+     */
     private List<PecsImages> imageWords;
+
+    /**
+     *
+     */
+    private List<PecsImages> sentenceWords;
+
+    /**
+     *
+     */
+    private RecyclerView recyclerView;
+
+    /**
+     *
+     */
+    private SentenceBuilderAdapter mAdapter;
+
+    /**
+     *
+     * @param savedInstanceState
+     */
+    private ImageAdapter imageAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +59,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        sentenceWords = new ArrayList<>();
+
         imageWords = new ArrayList<>();
         imageWords.clear();
         PecsImages image = new PecsImages(getString(R.string.Action_Words),R.mipmap.ic_launcher);
@@ -41,8 +69,6 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         Intent intent = getIntent();
         String category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
         switch (category){
-            case "Add Category":
-                break;
             case "Favourites":
                 break;
             case "At Home":
@@ -71,9 +97,17 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
 
 
         final GridView gridView = (GridView)findViewById(R.id.gridviewSecond);
-        final ImageAdapter imageAdapter = new ImageAdapter(this, imageWords);
+        imageAdapter = new ImageAdapter(this, imageWords);
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(this);
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView2);
+        mAdapter = new SentenceBuilderAdapter(sentenceWords);
+        RecyclerView.LayoutManager mLayoutManage = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManage);
+        recyclerView.setAdapter(mAdapter);
+
 
         //check for TTS data
         Intent checkTTSIntent = new Intent();
@@ -91,11 +125,20 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        PecsImages image = imageWords.get(position);
-        speakWords(image.getWord());
-        if (image.getWord().equals("Action Words")) {
-            Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
-            startActivity(actionWords);
+        switch (parent.getId()) {
+            case R.id.gridviewSecond:
+                PecsImages image = imageWords.get(position);
+                speakWords(image.getWord());
+                if (image.getWord().equals("Action Words")) {
+                    Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
+                    startActivity(actionWords);
+                } else {
+                    sentenceWords.add(image);
+                    mAdapter.notifyDataSetChanged();
+                }
+                break;
+            case R.id.recyclerView2:
+
 
         }
 

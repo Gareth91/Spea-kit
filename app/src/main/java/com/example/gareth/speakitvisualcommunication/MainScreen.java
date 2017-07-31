@@ -73,9 +73,13 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         PecsImages image = imageCategories.get(position);
         speakWords(image.getWord());
 
-        Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
-        intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
-        startActivity(intent);
+        if (image.getWord().equals("Add Category")) {
+
+        } else {
+            Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
+            intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
+            startActivity(intent);
+        }
 
     }
 
