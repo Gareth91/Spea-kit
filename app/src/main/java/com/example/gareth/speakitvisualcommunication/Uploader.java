@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -29,18 +28,17 @@ public class Uploader extends AppCompatActivity {
 
     final int REQUEST_CODE_GALLERY = 999;
 
-    public static SQLiteHelper sqLiteHelper;
+    public static DatabaseOperations ops;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_uploader);
 
+        ops = new DatabaseOperations(getApplicationContext());
+        ops.open();
+
         init();
-
-        sqLiteHelper = new SQLiteHelper(this, "PECSDB.sqlite", null, 1);
-
-        sqLiteHelper.queryData("CREATE TABLE IF NOT EXISTS PECS (Id INTEGER PRIMARY KEY AUTOINCREMENT, word VARCHAR, images BLOB, number INTEGER)");
 
         btnChoose.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -57,7 +55,7 @@ public class Uploader extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     try{
-                        sqLiteHelper.insertData(
+                        ops.insertData(
                                 edtName.getText().toString().trim(),
                                 imageViewToByte(imageView)
                         );
@@ -127,5 +125,35 @@ public class Uploader extends AppCompatActivity {
         btnList = (Button) findViewById(R.id.btnList);
         imageView = (ImageView) findViewById(R.id.imageViewAdd);
     }
+
+    /**
+     * onResume method
+     */
+    public void onResume() {
+        super.onResume();
+        //Open database
+        ops.open();
+
+    }
+
+    /**
+     *onStop method closes the event listener
+     */
+    @Override
+    public void  onStop() {
+        super.onStop();
+        ops.close();
+    }
+
+    /**
+     * When the activity is finished the method will close the  SQLite database.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Calling the close method to close the database.
+        ops.close();
+    }
+
 }
 

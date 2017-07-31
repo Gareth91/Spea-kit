@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 /**
  * Created by Gareth on 31/07/2017.
@@ -12,66 +13,75 @@ import android.database.sqlite.SQLiteStatement;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
-    public SQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, factory, version);
+    /**
+     * Database Version
+     */
+    private static final int Database_Version = 2;
+
+    /**
+     * Database name
+     */
+    private static final String Database_Name = "pecs.db";
+
+    /**
+     * Table Name
+     */
+    public static final String Table_Name= "images_table";
+
+    /**
+     *
+     */
+    public static final String word = "word";
+
+    /**
+     *
+     */
+    public static final String Column_Id = "_id";
+
+    /**
+     *
+     */
+    public static final String image = "image";
+
+    /**
+     *
+     */
+    public static final String number = "number";
+
+    private static final String Create_Table1 = "create table "+ Table_Name +" ("+ Column_Id +" integer primary key autoincrement, "
+            +word+" text not null, "+image+" blob not null, "+number+" integer not null)";
+
+    /**
+     *
+     * @param context
+     */
+    public SQLiteHelper(Context context) {
+        super(context, Database_Name, null, Database_Version);
     }
 
-    public void queryData(String sql){
-        SQLiteDatabase database = getWritableDatabase();
-        database.execSQL(sql);
-    }
-
-    public void insertData(String word, byte[] images){
-        SQLiteDatabase database = getWritableDatabase();
-        String sql = "INSERT INTO PECS VALUES (NULL, ?, ?)";
-
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();
-
-        statement.bindString(1, word);;
-        statement.bindBlob(2, images);
-
-        statement.executeInsert();
-    }
-
-    public void updateData(String word, byte[] images, int id) {
-        SQLiteDatabase database = getWritableDatabase();
-
-        String sql = "UPDATE PECS SET word = ?, images = ? WHERE id = ?";
-        SQLiteStatement statement = database.compileStatement(sql);
-
-        statement.bindString(1, word);
-        statement.bindBlob(2, images);
-        statement.bindDouble(3, (double)id);
-
-        statement.execute();
-        database.close();
-    }
-
-    public  void deleteData(int id) {
-        SQLiteDatabase database = getWritableDatabase();
-
-        String sql = "DELETE FROM PECS WHERE id = ?";
-        SQLiteStatement statement = database.compileStatement(sql);
-        statement.clearBindings();
-        statement.bindDouble(1, (double)id);
-
-        statement.execute();
-        database.close();
-    }
-
-    public Cursor getData(String sql){
-        SQLiteDatabase database = getReadableDatabase();
-        return database.rawQuery(sql, null);
-    }
-
+    /**
+     *
+     * @param sqLiteDatabase
+     */
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        sqLiteDatabase.execSQL(Create_Table1);
     }
 
+    /**
+     *
+     * @param sqLiteDatabase
+     * @param oldVersion
+     * @param newVersion
+     */
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
 
+        Log.w("TaskDBAdapter", "Upgrading from version " +oldVersion + " to " +newVersion + ", which will destroy all old data");
+
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+Table_Name);
+        onCreate(sqLiteDatabase);
     }
+
+
 }

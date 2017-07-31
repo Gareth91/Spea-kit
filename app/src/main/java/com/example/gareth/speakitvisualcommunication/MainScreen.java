@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static com.example.gareth.speakitvisualcommunication.Uploader.sqLiteHelper;
 
 public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener{
 
@@ -76,6 +75,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             new PecsImages("Today's Activities", R.mipmap.ic_launcher,1)
     };
 
+    /**
+     *
+     */
+    private DatabaseOperations ops;
+
+    /**
+     *
+     */
     ImageView pecsView;
 
 
@@ -88,30 +95,25 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
+        //
+        ops = new DatabaseOperations(getApplicationContext());
+        ops.open();
+
+        //
         imageCategories = new ArrayList<>(Arrays.asList(categories));
-        list = new ArrayList<>();
         gridView = (GridView)findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(this, imageCategories);
         gridView.setAdapter(imageAdapter);
 
         // get all data from sqlite
-        //Cursor cursor = sqLiteHelper.getData("SELECT * FROM PECS");
-        //if there are images present
-        //if(cursor.getCount() > 0) {
-            //Move to the first row
-            //cursor.moveToFirst();
-            //do {
-                //int id = cursor.getInt(0);
-                //String word = cursor.getString(1);
-                //byte[] images = cursor.getBlob(2);
-                //list.add(new PecsImages(word, images, id));
-           // }while(cursor.moveToNext());
-            //imageCategories.addAll(list);
-            //imageAdapter.notifyDataSetChanged();
-        //}
+        list = ops.getData();
+        imageCategories.addAll(list);
+        imageAdapter.notifyDataSetChanged();
 
+        //
         gridView.setOnItemClickListener(this);
 
+        //
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -123,23 +125,12 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 dialog.setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int item) {
+                        List<Integer> arrID = new ArrayList<>();
+                        arrID = ops.queryData();
                         if (item == 0) {
-                            // update
-                            Cursor c = sqLiteHelper.getData("SELECT id FROM PECS");
-                            ArrayList<Integer> arrID = new ArrayList<Integer>();
-                            while (c.moveToNext()) {
-                                arrID.add(c.getInt(0));
-                            }
                             // show dialog update at here
                             showDialogUpdate(MainScreen.this, arrID.get(position));
-
                         } else {
-                            // delete
-                            Cursor c = sqLiteHelper.getData("SELECT id FROM PECS");
-                            ArrayList<Integer> arrID = new ArrayList<Integer>();
-                            while (c.moveToNext()) {
-                                arrID.add(c.getInt(0));
-                            }
                             showDialogDelete(arrID.get(position));
                         }
                     }
@@ -171,7 +162,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         speakWords(image.getWord());
 
         if (image.getWord().equals("Add Category")) {
-
+            Intent intent2  = new Intent(getApplicationContext(), Uploader.class);
+            startActivity(intent2);
         } else {
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
@@ -279,7 +271,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             @Override
             public void onClick(View v) {
                 try {
-                    Uploader.sqLiteHelper.updateData(
+                    ops.updateData(
                             edtName.getText().toString().trim(),
                             Uploader.imageViewToByte(pecsView),
                             position
@@ -299,16 +291,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      */
     private void updatePecsList() {
         // get all data from sqlite
-        Cursor cursor = Uploader.sqLiteHelper.getData("SELECT * FROM PECS");
         list.clear();
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(0);
-            String word = cursor.getString(1);
-            byte[] images = cursor.getBlob(2);
-            int number = cursor.getInt(3);
-
-            list.add(new PecsImages(word, images, id, number));
-        }
+        list = ops.getData();
         imageCategories.addAll(list);
         imageAdapter.notifyDataSetChanged();
     }
@@ -326,7 +310,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    Uploader.sqLiteHelper.deleteData(idPecs);
+                    ops.deleteData(idPecs);
                     Toast.makeText(getApplicationContext(), "Delete successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
@@ -364,6 +348,35 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             return;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    /**
+     * onResume method
+     */
+    public void onResume() {
+        super.onResume();
+        //Open database
+        ops.open();
+
+    }
+
+    /**
+     *onStop method closes the event listener
+     */
+    @Override
+    public void  onStop() {
+        super.onStop();
+        ops.close();
+    }
+
+    /**
+     * When the activity is finished the method will close the  SQLite database.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Calling the close method to close the database.
+        ops.close();
     }
 
 
