@@ -40,7 +40,7 @@ public class Uploader extends AppCompatActivity {
 
         sqLiteHelper = new SQLiteHelper(this, "PECSDB.sqlite", null, 1);
 
-        sqLiteHelper.queryData("CREATE TABLE IF NOT EXISTS PECS(Id INTEGER PRIMARY KEY AUTOINCREMENT, word VARCHAR, images BLOB)");
+        sqLiteHelper.queryData("CREATE TABLE IF NOT EXISTS PECS (Id INTEGER PRIMARY KEY AUTOINCREMENT, word VARCHAR, images BLOB, number INTEGER)");
 
         btnChoose.setOnClickListener(new View.OnClickListener() {
                 @Override

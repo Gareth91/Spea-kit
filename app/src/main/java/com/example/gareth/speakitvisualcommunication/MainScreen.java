@@ -66,14 +66,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      *
      */
     private PecsImages[] categories = {
-            new PecsImages("Add Category", R.mipmap.ic_launcher),
-            new PecsImages("Favourites", R.mipmap.ic_launcher),
-            new PecsImages("At Home", R.drawable.home),
-            new PecsImages("About Me", R.mipmap.ic_launcher),
-            new PecsImages("Food And Drink", R.mipmap.ic_launcher),
-            new PecsImages("Greetings", R.mipmap.ic_launcher),
-            new PecsImages("Leisure", R.mipmap.ic_launcher),
-            new PecsImages("Today's Activities", R.mipmap.ic_launcher)
+            new PecsImages("Add Category", R.mipmap.ic_launcher,1),
+            new PecsImages("Favourites", R.mipmap.ic_launcher,1),
+            new PecsImages("At Home", R.drawable.home,1),
+            new PecsImages("About Me", R.mipmap.ic_launcher,1),
+            new PecsImages("Food And Drink", R.mipmap.ic_launcher,1),
+            new PecsImages("Greetings", R.mipmap.ic_launcher,1),
+            new PecsImages("Leisure", R.mipmap.ic_launcher,1),
+            new PecsImages("Today's Activities", R.mipmap.ic_launcher,1)
     };
 
     ImageView pecsView;
@@ -99,16 +99,16 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //if there are images present
         //if(cursor.getCount() > 0) {
             //Move to the first row
-           // cursor.moveToFirst();
-           // do {
-               // int id = cursor.getInt(0);
-               // String word = cursor.getString(1);
-               // byte[] images = cursor.getBlob(2);
-               // list.add(new PecsImages(word, images, id));
-          //  }while(cursor.moveToNext());
-          //  imageCategories.addAll(list);
-           // imageAdapter.notifyDataSetChanged();
-      //  }
+            //cursor.moveToFirst();
+            //do {
+                //int id = cursor.getInt(0);
+                //String word = cursor.getString(1);
+                //byte[] images = cursor.getBlob(2);
+                //list.add(new PecsImages(word, images, id));
+           // }while(cursor.moveToNext());
+            //imageCategories.addAll(list);
+            //imageAdapter.notifyDataSetChanged();
+        //}
 
         gridView.setOnItemClickListener(this);
 
@@ -305,8 +305,9 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             int id = cursor.getInt(0);
             String word = cursor.getString(1);
             byte[] images = cursor.getBlob(2);
+            int number = cursor.getInt(3);
 
-            list.add(new PecsImages(word, images, id));
+            list.add(new PecsImages(word, images, id, number));
         }
         imageCategories.addAll(list);
         imageAdapter.notifyDataSetChanged();

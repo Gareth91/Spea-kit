@@ -63,7 +63,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
 
         imageWords = new ArrayList<>();
         imageWords.clear();
-        PecsImages image = new PecsImages(getString(R.string.Action_Words),R.mipmap.ic_launcher);
+        PecsImages image = new PecsImages(getString(R.string.Action_Words),R.mipmap.ic_launcher,1);
         imageWords.add(image);
 
         Intent intent = getIntent();
@@ -78,9 +78,9 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             case "Food and Drink":
                 break;
             case "Greetings":
-                PecsImages image2 = new PecsImages(getString(R.string.Good_Morning),R.mipmap.ic_launcher);
-                PecsImages image3 = new PecsImages("What's your name?",R.mipmap.ic_launcher);
-                PecsImages image4 = new PecsImages("See you later",R.mipmap.ic_launcher);
+                PecsImages image2 = new PecsImages(getString(R.string.Good_Morning),R.mipmap.ic_launcher,1);
+                PecsImages image3 = new PecsImages("What's your name?",R.mipmap.ic_launcher,1);
+                PecsImages image4 = new PecsImages("See you later",R.mipmap.ic_launcher,1);
                 imageWords.add(image2);
                 imageWords.add(image3);
                 imageWords.add(image4);

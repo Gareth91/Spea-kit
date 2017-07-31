@@ -38,6 +38,11 @@ public class PecsImages {
     }
 
     /**
+     *
+     */
+    private int number;
+
+    /**
      * sets the Image
      * @param images
      */
@@ -74,9 +79,10 @@ public class PecsImages {
      * @param word  - The word to be spoken
      * @param image - The PECS image associated with the word to be spoken
      */
-    public PecsImages(String word, int image) {
+    public PecsImages(String word, int image, int number) {
         this.word = word;
         this.image = image;
+        this.number = number;
     }
 
     /**
@@ -86,10 +92,11 @@ public class PecsImages {
      * @param images
      * @param id
      */
-    public PecsImages(String word, byte[] images, int id) {
+    public PecsImages(String word, byte[] images, int id, int number) {
         this.word = word;
         this.images = images;
         this.id = id;
+        this.number = number;
     }
 
     /**
@@ -123,6 +130,14 @@ public class PecsImages {
      */
     public void setImage(int image) {
         this.image = image;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int getNumber() {
+        return number;
     }
 
 }
