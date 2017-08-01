@@ -250,7 +250,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         dialog.setTitle("Update");
 
         pecsView = (ImageView) dialog.findViewById(R.id.pecsImage);
-        final EditText edtName = (EditText) dialog.findViewById(R.id.edtName);
+        final EditText edtName = (EditText) dialog.findViewById(R.id.pecsName);
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
 
         // set width for dialog
@@ -281,6 +281,17 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                             Uploader.imageViewToByte(pecsView),
                             id
                     );
+                    Iterator<PecsImages> iterator = imageCategories.iterator();
+                        while (iterator.hasNext()) {
+                            if(iterator.next().getId() == id) {
+                                iterator.remove();
+                                imageAdapter.notifyDataSetChanged();
+                                PecsImages item = ops.getItem(id);
+                                imageCategories.add(item);
+                                imageAdapter.notifyDataSetChanged();
+                                break;
+                            }
+                        }
                     dialog.dismiss();
                     Toast.makeText(getApplicationContext(), "Update successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {

@@ -72,6 +72,29 @@ public class DatabaseOperations {
         return imagesList;
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public PecsImages getItem(int id) {
+        // get all data from sqlite
+        PecsImages image = null;
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Table_Name +" where "+SQLiteHelper.Column_Id+ " = ?", new String[]{String.valueOf(id)} );
+        //if there are images present
+        if(cursor.getCount() > 0) {
+            //Move to the first row
+            cursor.moveToFirst();
+            do {
+                String word = cursor.getString(1);
+                byte[] images = cursor.getBlob(2);
+                int number = cursor.getInt(3);
+                image = new PecsImages(word, images, id, number);
+            } while (cursor.moveToNext());
+        }
+        return image;
+    }
+
 
     /**
      * @param word
