@@ -1,17 +1,29 @@
 package com.example.gareth.speakitvisualcommunication;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +48,11 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     /**
      *
      */
+    private List<PecsImages> list;
+
+    /**
+     *
+     */
     private RecyclerView recyclerView;
 
     /**
@@ -43,6 +60,20 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     private SentenceBuilderAdapter mAdapter;
 
+    /**
+     *
+     */
+    private DatabaseOperations ops;
+
+    /**
+     *
+     */
+    private ImageView pecsView;
+
+    /**
+     *
+     */
+    private String category;
     /**
      *
      * @param savedInstanceState
@@ -59,15 +90,27 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        //
+        ops = new DatabaseOperations(getApplicationContext());
+        ops.open();
+
+        //
         sentenceWords = new ArrayList<>();
 
+        //
         imageWords = new ArrayList<>();
         imageWords.clear();
         PecsImages image = new PecsImages(getString(R.string.Action_Words),R.mipmap.ic_launcher,1);
+        PecsImages addImage = new PecsImages((getString(R.string.Add_Category)), R.mipmap.ic_launcher,1);
+        imageWords.add(addImage);
         imageWords.add(image);
 
+
+
+        //
         Intent intent = getIntent();
-        String category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
+        category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
+        list = ops.getData(category);
         switch (category){
             case "Favourites":
                 break;
@@ -92,16 +135,46 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             default:
                 break;
 
-
         }
+        //
+        imageWords.addAll(list);
 
-
+        //
         final GridView gridView = (GridView)findViewById(R.id.gridviewSecond);
         imageAdapter = new ImageAdapter(this, imageWords);
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(this);
 
+        //
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                final PecsImages image = imageWords.get(position);
+                if (image.getNumber() != 1) {
+                    CharSequence[] items = {"Update", "Delete"};
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(SecondScreen.this);
 
+                    dialog.setTitle("Choose an action");
+                    dialog.setItems(items, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int item) {
+                            if (item == 0) {
+                                // show dialog update at here
+                                showDialogUpdate(SecondScreen.this, image.getId());
+                            } else {
+                                showDialogDelete(image.getId());
+                            }
+                        }
+                    });
+                    dialog.show();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        //
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView2);
         mAdapter = new SentenceBuilderAdapter(sentenceWords);
         RecyclerView.LayoutManager mLayoutManage = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -132,6 +205,9 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 if (image.getWord().equals("Action Words")) {
                     Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
                     startActivity(actionWords);
+                } else if (image.getWord().equals("Add Category")) {
+                    Intent upload = new Intent(getApplicationContext(), Uploader.class);
+                    startActivity(upload);
                 } else {
                     sentenceWords.add(image);
                     mAdapter.notifyDataSetChanged();
@@ -207,5 +283,167 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     * @param activity
+     * @param id
+     */
+    private void showDialogUpdate(Activity activity, final int id) {
+
+        final Dialog dialog = new Dialog(activity);
+        dialog.setContentView(R.layout.update_pecs_images);
+        dialog.setTitle("Update");
+
+        pecsView = (ImageView) dialog.findViewById(R.id.pecsImage);
+        final EditText edtName = (EditText) dialog.findViewById(R.id.pecsName);
+        Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
+        ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose);
+
+        // set width for dialog
+        int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
+        // set height for dialog
+        int height = (int) (activity.getResources().getDisplayMetrics().heightPixels * 0.7);
+        dialog.getWindow().setLayout(width, height);
+        dialog.show();
+
+        pecsView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // request photo library
+                ActivityCompat.requestPermissions(
+                        SecondScreen.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        888
+                );
+            }
+        });
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    ops.updateData(
+                            edtName.getText().toString().trim(),
+                            Uploader.imageViewToByte(pecsView), category,
+                            id
+                    );
+                    Iterator<PecsImages> iterator = imageWords.iterator();
+                    while (iterator.hasNext()) {
+                        if(iterator.next().getId() == id) {
+                            iterator.remove();
+                            imageAdapter.notifyDataSetChanged();
+                            PecsImages item = ops.getItem(id);
+                            imageWords.add(item);
+                            imageAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                    dialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "Update successfully!!!", Toast.LENGTH_SHORT).show();
+                } catch (Exception error) {
+                    Log.e("Update error", error.getMessage());
+                }
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    /**
+     *
+     * @param idPecs
+     */
+    private void showDialogDelete(final int idPecs) {
+        final AlertDialog.Builder dialogDelete = new AlertDialog.Builder(SecondScreen.this);
+
+        dialogDelete.setTitle("Warning!!");
+        dialogDelete.setMessage("Are you sure you want to this delete?");
+        dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    ops.deleteData(idPecs);
+                    Iterator<PecsImages> iterator = imageWords.iterator();
+                    while (iterator.hasNext()) {
+                        if(iterator.next().getId() == idPecs) {
+                            iterator.remove();
+                            imageAdapter.notifyDataSetChanged();
+                            break;
+                        }
+                    }
+                    Toast.makeText(getApplicationContext(), "Delete successfully!!!", Toast.LENGTH_SHORT).show();
+
+                } catch (Exception e) {
+                    Log.e("error", e.getMessage());
+                }
+            }
+        });
+
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialogDelete.show();
+    }
+
+
+    /**
+     *
+     */
+    private void updatePecsList() {
+        boolean add = true;
+        // get all data from sqlite
+        list = ops.getData(category);
+        for(PecsImages image : imageWords) {
+            for(PecsImages image2 : list) {
+                if (image.getNumber() != 1 && image.getId() == image2.getId()) {
+                    add = false;
+                    break;
+                }
+            }
+        }
+        if (add == true) {
+            imageWords.addAll(list);
+            imageAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    /**
+     * onResume method
+     */
+    public void onResume() {
+        super.onResume();
+        //Open database
+        ops.open();
+        updatePecsList();
+
+    }
+
+    /**
+     *onStop method closes the event listener
+     */
+    @Override
+    public void  onStop() {
+        super.onStop();
+        ops.close();
+    }
+
+    /**
+     * When the activity is finished the method will close the  SQLite database.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //Calling the close method to close the database.
+        ops.close();
+    }
 
 }

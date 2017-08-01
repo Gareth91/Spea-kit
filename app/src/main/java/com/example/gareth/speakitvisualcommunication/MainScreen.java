@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -86,7 +87,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     /**
      *
      */
-    ImageView pecsView;
+    private ImageView pecsView;
 
 
 
@@ -253,9 +254,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
         pecsView = (ImageView) dialog.findViewById(R.id.pecsImage);
         final EditText edtName = (EditText) dialog.findViewById(R.id.pecsName);
-
-
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
+        ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose);
 
         // set width for dialog
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
@@ -301,6 +301,13 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
                 }
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
             }
         });
     }
@@ -396,6 +403,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //Open database
         ops.open();
         updatePecsList();
+
     }
 
     /**
