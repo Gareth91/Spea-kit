@@ -53,10 +53,10 @@ public class DatabaseOperations {
      *
      * @return
      */
-    public List<PecsImages> getData() {
+    public List<PecsImages> getData(String categorySelected) {
         // get all data from sqlite
         List<PecsImages> imagesList = new ArrayList<>();
-        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Table_Name, null);
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Table_Name+" where "+SQLiteHelper.category+" = ?",new String[]{categorySelected});
         //if there are images present
         if(cursor.getCount() > 0) {
             //Move to the first row
@@ -65,12 +65,14 @@ public class DatabaseOperations {
                 int id = cursor.getInt(0);
                 String word = cursor.getString(1);
                 byte[] images = cursor.getBlob(2);
-                int number = cursor.getInt(3);
-                imagesList.add(new PecsImages(word, images, id, number));
+                String category = cursor.getString(3);
+                int number = cursor.getInt(4);
+                imagesList.add(new PecsImages(word, images, id, category, number));
             } while (cursor.moveToNext());
         }
         return imagesList;
     }
+
 
     /**
      *
@@ -88,8 +90,9 @@ public class DatabaseOperations {
             do {
                 String word = cursor.getString(1);
                 byte[] images = cursor.getBlob(2);
-                int number = cursor.getInt(3);
-                image = new PecsImages(word, images, id, number);
+                String category = cursor.getString(3);
+                int number = cursor.getInt(4);
+                image = new PecsImages(word, images, id, category, number);
             } while (cursor.moveToNext());
         }
         return image;
@@ -97,16 +100,19 @@ public class DatabaseOperations {
 
 
     /**
+     *
      * @param word
      * @param images
+     * @param category
      */
-    public void insertData(String word, byte[] images) {
+    public void insertData(String word, byte[] images, String category) {
 
         ContentValues values = new ContentValues();
 
-        //Add the booking date, company name and customer id to booking table
+        //Add the booking date, company name, category and customer id to booking table
         values.put(SQLiteHelper.word, word);
         values.put(SQLiteHelper.image, images);
+        values.put(SQLiteHelper.category, category);
         values.put(SQLiteHelper.number, 2);
 
         database.insert(SQLiteHelper.Table_Name, null, values);
@@ -114,17 +120,20 @@ public class DatabaseOperations {
     }
 
     /**
+     *
      * @param word
      * @param images
+     * @param category
      * @param id
      */
-    public void updateData(String word, byte[] images, int id) {
+    public void updateData(String word, byte[] images, String category, int id) {
 
         ContentValues values = new ContentValues();
 
         //Add the booking date, company name and customer id to booking table
         values.put(SQLiteHelper.word, word);
         values.put(SQLiteHelper.image, images);
+        values.put(SQLiteHelper.category, category);
         values.put(SQLiteHelper.number, 2);
 
         database.update(SQLiteHelper.Table_Name, values, "_id = ?", new String[]{String.valueOf(id)});

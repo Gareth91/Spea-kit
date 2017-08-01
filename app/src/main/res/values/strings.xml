@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">SPEA-KIT </string>
 
+    <string name="choose_image">Choose Image</string>
+    <string name="save">Save</string>
+    <string name="select_category">Select Category</string>
+    <string name="name">Name</string>
+
     <string name="At_Home">At Home</string>"
     <string name="Food_And_Drink">Food and Drink</string>"
     <string name="About_Me">About Me</string>"

@@ -1,5 +1,7 @@
 package com.example.gareth.speakitvisualcommunication;
 
+import android.database.sqlite.SQLiteOpenHelper;
+
 /**
  * Created by Gareth on 27/07/2017.
  */
@@ -27,6 +29,8 @@ public class PecsImages {
      * Anthony
      */
     private int id;
+
+    private String category;
 
     /**
      * gets the Image
@@ -92,7 +96,7 @@ public class PecsImages {
      * @param images
      * @param id
      */
-    public PecsImages(String word, byte[] images, int id, int number) {
+    public PecsImages(String word, byte[] images, int id, String category, int number) {
         this.word = word;
         this.images = images;
         this.id = id;
@@ -140,6 +144,16 @@ public class PecsImages {
         return number;
     }
 
+    /**
+     *
+     * @return
+     */
+    public String getCategory() {
+        return category;
+    }
+
 }
+
+
 
 

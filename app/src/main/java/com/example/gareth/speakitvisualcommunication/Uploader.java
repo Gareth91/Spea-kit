@@ -12,19 +12,30 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Uploader extends AppCompatActivity {
 
     EditText edtName;
-    Button btnChoose, btnAdd, btnList;
+    Button btnChoose, btnAdd;
     ImageView imageView;
+    Spinner spinner;
+
+    private String categorySelected;
+
+    private String[] categoryArray = {"Home Page", "Favourites", "At Home", "About Me", "Food and Drink", "Greetings", "Leisure", "Today's Activities"};
 
     final int REQUEST_CODE_GALLERY = 999;
 
@@ -37,6 +48,24 @@ public class Uploader extends AppCompatActivity {
 
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
+
+        final List<String> spinnerList = new ArrayList<>(Arrays.asList(categoryArray));
+        spinner = (Spinner) findViewById(R.id.categorySelection);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, spinnerList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, final View view, int position, long id) {
+                //Get the selected booking from the spinner
+                categorySelected = spinner.getSelectedItem().toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         init();
 
@@ -57,7 +86,7 @@ public class Uploader extends AppCompatActivity {
                     try{
                         ops.insertData(
                                 edtName.getText().toString().trim(),
-                                imageViewToByte(imageView)
+                                imageViewToByte(imageView), categorySelected
                         );
                         Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
                         edtName.setText("");
@@ -122,7 +151,6 @@ public class Uploader extends AppCompatActivity {
         edtName = (EditText) findViewById(R.id.edtName);
         btnChoose = (Button) findViewById(R.id.btnChoose);
         btnAdd = (Button) findViewById(R.id.btnAdd);
-        btnList = (Button) findViewById(R.id.btnList);
         imageView = (ImageView) findViewById(R.id.imageViewAdd);
     }
 

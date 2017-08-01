@@ -16,7 +16,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * Database Version
      */
-    private static final int Database_Version = 2;
+    private static final int Database_Version = 3;
 
     /**
      * Database name
@@ -46,10 +46,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      *
      */
+    public  static final String category = "category";
+    /**
+     *
+     */
     public static final String number = "number";
 
     private static final String Create_Table1 = "create table "+ Table_Name +" ("+ Column_Id +" integer primary key autoincrement, "
-            +word+" text not null, "+image+" blob not null, "+number+" integer not null)";
+            +word+" text not null, "+image+" blob not null, "+category+" text not null, "+number+" integer not null)";
 
     /**
      *

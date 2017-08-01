@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.FileNotFoundException;
@@ -88,6 +89,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     ImageView pecsView;
 
 
+
     /**
      *
      * @param savedInstanceState
@@ -108,7 +110,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         gridView.setAdapter(imageAdapter);
 
         // get all data from sqlite
-        list = ops.getData();
+        list = ops.getData("Home Page");
         imageCategories.addAll(list);
         imageAdapter.notifyDataSetChanged();
 
@@ -251,6 +253,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
         pecsView = (ImageView) dialog.findViewById(R.id.pecsImage);
         final EditText edtName = (EditText) dialog.findViewById(R.id.pecsName);
+
+
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
 
         // set width for dialog
@@ -278,7 +282,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 try {
                     ops.updateData(
                             edtName.getText().toString().trim(),
-                            Uploader.imageViewToByte(pecsView),
+                            Uploader.imageViewToByte(pecsView), "Home Page",
                             id
                     );
                     Iterator<PecsImages> iterator = imageCategories.iterator();
@@ -307,7 +311,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     private void updatePecsList() {
         boolean add = true;
         // get all data from sqlite
-        list = ops.getData();
+        list = ops.getData("Home Page");
         for(PecsImages image : imageCategories) {
             for(PecsImages image2 : list) {
                 if (image.getNumber() != 1 && image.getId() == image2.getId()) {
