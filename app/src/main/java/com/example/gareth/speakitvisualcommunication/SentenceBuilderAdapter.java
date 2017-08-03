@@ -1,10 +1,15 @@
 package com.example.gareth.speakitvisualcommunication;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -13,7 +18,7 @@ import java.util.List;
  * Created by Gareth on 31/07/2017.
  */
 
-public class SentenceBuilderAdapter extends RecyclerView.Adapter<SentenceBuilderAdapter.MyViewHolder>{
+public class SentenceBuilderAdapter extends RecyclerView.Adapter<SentenceBuilderAdapter.MyViewHolder> {
 
     private List<PecsImages> imagesList;
 
@@ -32,6 +37,8 @@ public class SentenceBuilderAdapter extends RecyclerView.Adapter<SentenceBuilder
             super(view);
             textView = (TextView) view.findViewById(R.id.wordText3);
             imageView = (ImageView)view.findViewById(R.id.imageview3);
+
+
         }
     }
 
@@ -65,11 +72,19 @@ public class SentenceBuilderAdapter extends RecyclerView.Adapter<SentenceBuilder
      */
     @Override
     public void onBindViewHolder(SentenceBuilderAdapter.MyViewHolder holder, int position) {
-        PecsImages images = imagesList.get(position);
+        final PecsImages images = imagesList.get(position);
         holder.textView.setText(images.getWord());
-        holder.imageView.setImageResource(images.getImage());
+        if(images.getNumber() == 1) {
+            holder.imageView.setImageResource(images.getImage());
+        } else {
+            Bitmap bmp = BitmapFactory.decodeByteArray(images.getImages(), 0, images.getImages().length);
+            holder.imageView.setImageBitmap(bmp);
+
+        }
+
 
     }
+
 
     /**
      *

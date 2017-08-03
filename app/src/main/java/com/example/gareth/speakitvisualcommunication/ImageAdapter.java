@@ -95,12 +95,10 @@ public class ImageAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder)convertView.getTag();
-
+        viewHolder.textView.setText(image.getWord());
         if (image.getNumber() == 1) {
             viewHolder.imageView.setImageResource(image.getImage());
-            viewHolder.textView.setText(image.getWord());
         } else {
-            viewHolder.textView.setText(image.getWord());
             byte[] pecsImage = image.getImages();
             Bitmap bitmap = BitmapFactory.decodeByteArray(pecsImage, 0, pecsImage.length);
             viewHolder.imageView.setImageBitmap(bitmap);

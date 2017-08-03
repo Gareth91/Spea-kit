@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#ffffff"
     tools:context="com.example.gareth.speakitvisualcommunication.MainScreen">
 
@@ -10,6 +11,8 @@
         android:id="@+id/recyclerView"
         android:layout_height="80dp"
         android:layout_width="325dp"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
         android:background="@drawable/sentence_builder_border"
         />
 

@@ -76,6 +76,30 @@ public class DatabaseOperations {
 
     /**
      *
+     * @return
+     */
+    public List<PecsImages> getSentenceData() {
+        // get all data from sqlite
+        List<PecsImages> imagesList = new ArrayList<>();
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Sentence_Table,null);
+        //if there are images present
+        if(cursor.getCount() > 0) {
+            //Move to the first row
+            cursor.moveToFirst();
+            do {
+                int id = cursor.getInt(0);
+                String word = cursor.getString(1);
+                byte[] images = cursor.getBlob(2);
+                int number = cursor.getInt(3);
+                imagesList.add(new PecsImages(word, images, id, number));
+            } while (cursor.moveToNext());
+        }
+        return imagesList;
+    }
+
+
+    /**
+     *
      * @param id
      * @return
      */
@@ -119,6 +143,25 @@ public class DatabaseOperations {
 
     }
 
+
+    /**
+     *
+     * @param word
+     * @param images
+     */
+    public void insertSentenceData(String word, byte[] images) {
+
+        ContentValues values = new ContentValues();
+
+        //Add the booking date, company name, category and customer id to booking table
+        values.put(SQLiteHelper.word, word);
+        values.put(SQLiteHelper.image, images);
+        values.put(SQLiteHelper.number,2);
+
+        database.insert(SQLiteHelper.Sentence_Table, null, values);
+
+    }
+
     /**
      *
      * @param word
@@ -140,12 +183,22 @@ public class DatabaseOperations {
 
     }
 
+
     /**
      * @param id
      */
     public void deleteData(int id) {
 
         database.delete(SQLiteHelper.Table_Name, SQLiteHelper.Column_Id+" = ?",new String[]{String.valueOf(id)});
+
+    }
+
+    /**
+     * @param id
+     */
+    public void deleteSentenceData(int id) {
+
+        database.delete(SQLiteHelper.Sentence_Table, SQLiteHelper.Column_Id+" = ?",new String[]{String.valueOf(id)});
 
     }
 

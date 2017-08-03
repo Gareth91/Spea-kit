@@ -1,12 +1,15 @@
 package com.example.gareth.speakitvisualcommunication;
 
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.drawable.Drawable;
+
+import java.io.Serializable;
 
 /**
  * Created by Gareth on 27/07/2017.
  */
 
-public class PecsImages {
+public class PecsImages implements Serializable {
 
     /**
      * The word to be spoken
@@ -22,7 +25,7 @@ public class PecsImages {
      * PECS image Byte Code
      * Anthony
      */
-    private byte[]images;
+    private byte[] images;
 
     /**
      * ID for accessing Images
@@ -90,6 +93,19 @@ public class PecsImages {
     }
 
     /**
+     * Constructor that takes arguments
+     *
+     * @param word  - The word to be spoken
+     * @param images - The PECS image associated with the word to be spoken
+     */
+    public PecsImages(String word, byte[] images, int id, int number) {
+        this.word = word;
+        this.images = images;
+        this.id = id;
+        this.number = number;
+    }
+
+    /**
      * Created by Anthony
      * Constructor to handle the image byte code, word and ID
      * @param word
@@ -100,6 +116,7 @@ public class PecsImages {
         this.word = word;
         this.images = images;
         this.id = id;
+        this.category = category;
         this.number = number;
     }
 
@@ -142,6 +159,10 @@ public class PecsImages {
      */
     public int getNumber() {
         return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     /**

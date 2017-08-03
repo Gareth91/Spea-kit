@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener{
+public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, View.OnClickListener{
 
     //TTS object
     private TextToSpeech myTTS;
@@ -65,18 +68,19 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      */
     private GridView gridView;
 
+
     /**
      *
      */
     private PecsImages[] categories = {
-            new PecsImages("Add Category", R.mipmap.ic_launcher,1),
-            new PecsImages("Favourites", R.mipmap.ic_launcher,1),
+            new PecsImages("Add Category", R.drawable.home,1),
+            new PecsImages("Favourites", R.drawable.home,1),
             new PecsImages("At Home", R.drawable.home,1),
-            new PecsImages("About Me", R.mipmap.ic_launcher,1),
-            new PecsImages("Food And Drink", R.mipmap.ic_launcher,1),
-            new PecsImages("Greetings", R.mipmap.ic_launcher,1),
-            new PecsImages("Leisure", R.mipmap.ic_launcher,1),
-            new PecsImages("Today's Activities", R.mipmap.ic_launcher,1)
+            new PecsImages("About Me", R.drawable.home,1),
+            new PecsImages("Food And Drink", R.drawable.home,1),
+            new PecsImages("Greetings", R.drawable.home,1),
+            new PecsImages("Leisure", R.drawable.home,1),
+            new PecsImages("Today's Activities", R.drawable.home,1)
     };
 
     /**
@@ -88,6 +92,24 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      *
      */
     private ImageView pecsView;
+
+
+    /**
+     *
+     */
+    private RecyclerView recyclerView;
+
+
+    /**
+     *
+     */
+    private SentenceBuilderAdapter mAdapter;
+
+    /**
+     *
+     */
+    private List<PecsImages> sentenceWords;
+
 
 
 
@@ -104,11 +126,24 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
+
         //
         imageCategories = new ArrayList<>(Arrays.asList(categories));
         gridView = (GridView)findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(this, imageCategories);
         gridView.setAdapter(imageAdapter);
+
+        //
+        sentenceWords = new ArrayList<>();
+        List<PecsImages> list = new ArrayList<>();
+        list = ops.getSentenceData();
+        sentenceWords.addAll(list);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mAdapter = new SentenceBuilderAdapter(sentenceWords);
+        RecyclerView.LayoutManager mLayoutManage = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManage);
+        recyclerView.setAdapter(mAdapter);
+
 
         // get all data from sqlite
         list = ops.getData("Home Page");
@@ -133,7 +168,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                         @Override
                         public void onClick(DialogInterface dialog, int item) {
                             if (item == 0) {
-                                // show dialog update at here
+                                 //show dialog update at here
                                 showDialogUpdate(MainScreen.this, image.getId());
                             } else {
                                 showDialogDelete(image.getId());
@@ -148,11 +183,15 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             }
         });
 
-
         //check for TTS data
         Intent checkTTSIntent = new Intent();
         checkTTSIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkTTSIntent, MY_DATA_CHECK_CODE);
+
+        ImageButton cancelButton = (ImageButton) findViewById(R.id.deleteB);
+        cancelButton.setOnClickListener(this);
+        ImageButton playButton = (ImageButton) findViewById(R.id.speakB);
+        playButton.setOnClickListener(this);
 
     }
 
@@ -179,6 +218,36 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         }
 
     }
+
+    /**
+     *
+     * @param view
+     */
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            case R.id.deleteB:
+                if (sentenceWords.size() > 0) {
+                    ops.deleteSentenceData(sentenceWords.get(sentenceWords.size()-1).getId());
+                    sentenceWords.remove(sentenceWords.size()-1);
+                    mAdapter.notifyDataSetChanged();
+
+                }
+                break;
+            case R.id.speakB:
+                StringBuilder finalStringb =new StringBuilder();
+                for (PecsImages item : sentenceWords) {
+                    finalStringb.append(item.getWord()).append(" ");
+                }
+                speakWords(finalStringb.toString());
+
+                break;
+            default:
+                break;
+        }
+    }
+
 
     /**
      *
@@ -403,6 +472,12 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //Open database
         ops.open();
         updatePecsList();
+        //
+        sentenceWords.clear();
+        List<PecsImages> list = new ArrayList<>();
+        list = ops.getSentenceData();
+        sentenceWords.addAll(list);
+        mAdapter.notifyDataSetChanged();
 
     }
 
@@ -424,6 +499,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //Calling the close method to close the database.
         ops.close();
     }
+
 
 
 }
