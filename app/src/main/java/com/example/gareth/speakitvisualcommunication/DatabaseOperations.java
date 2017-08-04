@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Class that carries out operations on the SQLite database
  * Created by Gareth on 31/07/2017.
  */
 
@@ -23,7 +24,6 @@ public class DatabaseOperations {
 
     /**
      * Constructor which takes a Context as parameter
-     *
      * @param context
      */
     public DatabaseOperations(Context context) {
@@ -35,7 +35,6 @@ public class DatabaseOperations {
 
     /**
      * Opens the database
-     *
      * @throws SQLiteAbortException
      */
     public void open() throws SQLiteAbortException {
@@ -50,8 +49,8 @@ public class DatabaseOperations {
     }
 
     /**
-     *
-     * @return
+     * Gets PecsImages objects which will be used in the GridView with a specific category and user
+     * @return a list of PecsImages objects
      */
     public List<PecsImages> getData(String categorySelected, String user) {
         // get all data from sqlite
@@ -76,8 +75,8 @@ public class DatabaseOperations {
 
 
     /**
-     *
-     * @return
+     * Gets PecsImages objects from the sentence table which are used within the RecyclerView.
+     * @return a list of PecsImages objects
      */
     public List<PecsImages> getSentenceData() {
         // get all data from sqlite
@@ -100,9 +99,9 @@ public class DatabaseOperations {
 
 
     /**
-     *
-     * @param id
-     * @return
+     * Gets a specific PecsImage object from the database
+     * @param id - the id of the object
+     * @return a PecsImages object
      */
     public PecsImages getItem(int id) {
         // get all data from sqlite
@@ -124,12 +123,12 @@ public class DatabaseOperations {
         return image;
     }
 
-
     /**
-     *
-     * @param word
-     * @param images
-     * @param category
+     * Inserts objects into the table containing PecsImages objects for the GridView
+     * @param word - The word to be entered
+     * @param images - the image to be entered
+     * @param category - the category of the object
+     * @param userName - The users name
      */
     public void insertData(String word, byte[] images, String category, String userName) {
 
@@ -148,9 +147,9 @@ public class DatabaseOperations {
 
 
     /**
-     *
-     * @param word
-     * @param images
+     * Inserts objects into the table containing PecsImages objects for the RecyclerView
+     * @param word - The word to be entered
+     * @param images - The image to be entered
      */
     public void insertSentenceData(String word, byte[] images) {
 
@@ -166,7 +165,7 @@ public class DatabaseOperations {
     }
 
     /**
-     *
+     * Updates information of an object within the table associated with the GridView
      * @param word
      * @param images
      * @param category
@@ -188,6 +187,7 @@ public class DatabaseOperations {
 
 
     /**
+     * Deletes objects from the table associated with the GridView
      * @param id
      */
     public void deleteData(int id) {
@@ -197,6 +197,7 @@ public class DatabaseOperations {
     }
 
     /**
+     * Deletes objects from the table associated with th RecyclerView
      * @param id
      */
     public void deleteSentenceData(int id) {

@@ -1,12 +1,10 @@
 package com.example.gareth.speakitvisualcommunication;
 
-import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.drawable.Drawable;
-
 import java.io.Serializable;
 
 /**
  * Created by Gareth on 27/07/2017.
+ * Class is used to create objects which will be used to communicate.
  */
 
 public class PecsImages implements Serializable {
@@ -17,7 +15,7 @@ public class PecsImages implements Serializable {
     private String word;
 
     /**
-     * The PECS image associated with the word to be spoken
+     * The image associated with the word to be spoken
      */
     private int image;
 
@@ -34,52 +32,19 @@ public class PecsImages implements Serializable {
     private int id;
 
     /**
-     *
+     * The category the iage and word are in.
      */
     private String category;
 
     /**
-     *
+     * The users name
      */
     private String userName;
 
     /**
-     * gets the Image
-     * Anthony
-     * @return
-     */
-    public byte[] getImages() {
-        return images;
-    }
-
-    /**
-     *
+     * Number which distinguishes whether image is in drawable or from database
      */
     private int number;
-
-    /**
-     * sets the Image
-     * @param images
-     */
-    public void setImages(byte[] images) {
-        this.images = images;
-    }
-
-    /**
-     * gets the image ID
-     * @return
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * sets the Image ID
-     * @param id
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
 
     /**
      * Default Constructor that takes no arguments
@@ -89,8 +54,8 @@ public class PecsImages implements Serializable {
     }
 
     /**
-     * Constructor that takes arguments
-     *
+     * Constructor that takes arguments to set the PecsImages
+     * objects that are created from drawable folder images.
      * @param word  - The word to be spoken
      * @param image - The PECS image associated with the word to be spoken
      */
@@ -101,8 +66,9 @@ public class PecsImages implements Serializable {
     }
 
     /**
-     * Constructor that takes arguments
-     *
+     * Constructor that takes arguments to set the PecsImages objects
+     * that are used to add to the recyclerView to allow user to build
+     * sentences.
      * @param word  - The word to be spoken
      * @param images - The PECS image associated with the word to be spoken
      */
@@ -114,18 +80,56 @@ public class PecsImages implements Serializable {
     }
 
     /**
-     * Created by Anthony
-     * Constructor to handle the image byte code, word and ID
-     * @param word
-     * @param images
-     * @param id
+     * Constructor that takes arguments to set the PecsImages objects
+     * that are created using image from the database.
+     * @param word -The word to be spoken
+     * @param images - The PECS image associated with the word to be spoken
+     * @param id - The id of the image
+     * @param category - The category the image object is in
+     * @param userName - The users name
+     * @param number - Number to indicate whether it is a drawable or from database
      */
     public PecsImages(String word, byte[] images, int id, String category, String userName, int number) {
         this.word = word;
         this.images = images;
         this.id = id;
         this.category = category;
+        this.userName = userName;
         this.number = number;
+    }
+
+    /**
+     * Gets the Image
+     * @return a byte array representing the image
+     */
+    public byte[] getImages() {
+        return images;
+    }
+
+    /**
+     * Sets the Image
+     * @param images
+     *         - The image to be uploaded to database
+     */
+    public void setImages(byte[] images) {
+        this.images = images;
+    }
+
+    /**
+     * Gets the image ID
+     * @return an int representing the id of the image
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Sets the Image ID
+     * @param id
+     *       - The id of an image
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -147,7 +151,7 @@ public class PecsImages implements Serializable {
 
     /**
      * An image which represents the word to be spoken
-     * @return a int for the image resource
+     * @return an int for the image resource
      */
     public int getImage() {
         return image;
@@ -156,14 +160,16 @@ public class PecsImages implements Serializable {
     /**
      * Sets the image resource
      * @param image
+     *        - The image associated with the word to be spoken
      */
     public void setImage(int image) {
         this.image = image;
     }
 
     /**
-     *
-     * @return
+     * Gets the number which indicates whether image is from database or
+     * from drawable
+     * @return an int representing where the image is stored
      */
     public int getNumber() {
         return number;
@@ -174,23 +180,25 @@ public class PecsImages implements Serializable {
     }
 
     /**
-     *
-     * @return
+     * Gets the category the object is in
+     * @return a String representing the category the object is in
      */
     public String getCategory() {
         return category;
     }
 
     /**
-     *
+     * Sets the userName
      * @param userName
+     *      The users name
      */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
     /**
-     *
+     * Gets the username
+     * @return a String representing the users name
      */
     public String getUserName() {
         return userName;

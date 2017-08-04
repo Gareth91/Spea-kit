@@ -113,7 +113,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         imageWords = new ArrayList<>();
         imageWords.clear();
         PecsImages image = new PecsImages(getString(R.string.Action_Words),R.drawable.seeyou,1);
-        PecsImages addImage = new PecsImages((getString(R.string.Add_Category)), R.drawable.seeyou,1);
+        PecsImages addImage = new PecsImages((getString(R.string.Add_Word)), R.drawable.seeyou,1);
         imageWords.add(addImage);
         imageWords.add(image);
 
@@ -217,7 +217,10 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                         image.setImages(bitMapData);
                     }
                     ops.insertSentenceData(image.getWord(),image.getImages());
-                    sentenceWords.add(image);
+                    List<PecsImages> list2 = ops.getSentenceData();
+                    sentenceWords.clear();
+                    mAdapter.notifyDataSetChanged();
+                    sentenceWords.addAll(list2);
                     mAdapter.notifyDataSetChanged();
                 }
                 break;
@@ -295,7 +298,6 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     ops.deleteSentenceData(sentenceWords.get(sentenceWords.size()-1).getId());
                     sentenceWords.remove(sentenceWords.size()-1);
                     mAdapter.notifyDataSetChanged();
-
                 }
                 break;
             case R.id.speakB2:
