@@ -33,7 +33,15 @@ public class PecsImages implements Serializable {
      */
     private int id;
 
+    /**
+     *
+     */
     private String category;
+
+    /**
+     *
+     */
+    private String userName;
 
     /**
      * gets the Image
@@ -112,7 +120,7 @@ public class PecsImages implements Serializable {
      * @param images
      * @param id
      */
-    public PecsImages(String word, byte[] images, int id, String category, int number) {
+    public PecsImages(String word, byte[] images, int id, String category, String userName, int number) {
         this.word = word;
         this.images = images;
         this.id = id;
@@ -173,6 +181,20 @@ public class PecsImages implements Serializable {
         return category;
     }
 
+    /**
+     *
+     * @param userName
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     *
+     */
+    public String getUserName() {
+        return userName;
+    }
 }
 
 

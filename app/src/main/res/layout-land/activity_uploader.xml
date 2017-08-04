@@ -23,9 +23,10 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         app:srcCompat="@android:drawable/ic_menu_camera"
-        android:layout_marginEnd="34dp"
-        android:layout_above="@+id/btnAdd"
-        android:layout_toStartOf="@+id/edtName" />
+        android:layout_marginEnd="23dp"
+        android:layout_above="@+id/btnChoose"
+        android:layout_toStartOf="@+id/edtName"
+        android:layout_marginBottom="24dp" />
 
     <Button
         android:id="@+id/btnChoose"
@@ -43,19 +44,10 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="26dp"
         android:text="@string/save"
-        android:layout_marginEnd="51dp"
-        android:layout_alignBottom="@+id/btnChoose"
-        android:layout_alignEnd="@+id/edtName" />
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/imageViewAdd"
+        android:layout_marginStart="39dp" />
 
-    <Spinner
-        android:id="@+id/categorySelection"
-        android:layout_width="100dp"
-        android:layout_height="40dp"
-        android:text="@string/select_category"
-        android:layout_marginTop="46dp"
-        android:layout_below="@+id/edtName"
-        android:layout_alignEnd="@+id/btnAdd" />
 
 </RelativeLayout>

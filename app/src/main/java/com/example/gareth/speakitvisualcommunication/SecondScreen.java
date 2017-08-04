@@ -83,6 +83,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     private String category;
 
+    String user = "Gareth";
+
     /**
      *
      * @param savedInstanceState
@@ -119,7 +121,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         //
         Intent intent = getIntent();
         category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
-        list = ops.getData(category);
+        list = ops.getData(category, user);
         switch (category){
             case "Favourites":
                 break;
@@ -202,6 +204,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     startActivity(actionWords);
                 } else if (image.getWord().equals("Add Category")) {
                     Intent upload = new Intent(getApplicationContext(), Uploader.class);
+                    upload.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
+                    upload.putExtra("com.example.gareth.speakitvisualcommunication.page", category);
                     startActivity(upload);
                 } else {
                     if (image.getNumber() == 1) {
@@ -487,7 +491,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     private void updatePecsList() {
         boolean add = true;
         // get all data from sqlite
-        list = ops.getData(category);
+        list = ops.getData(category, user);
         for(PecsImages image : imageWords) {
             for(PecsImages image2 : list) {
                 if (image.getNumber() != 1 && image.getId() == image2.getId()) {

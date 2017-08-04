@@ -32,7 +32,7 @@ public class Uploader extends AppCompatActivity {
     EditText edtName;
     Button btnChoose, btnAdd;
     ImageView imageView;
-    Spinner spinner;
+    //Spinner spinner;
 
     private String categorySelected;
 
@@ -41,6 +41,8 @@ public class Uploader extends AppCompatActivity {
     final int REQUEST_CODE_GALLERY = 999;
 
     private DatabaseOperations ops;
+
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +53,30 @@ public class Uploader extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        Intent intent = getIntent();
+        user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.User");
+        categorySelected = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.page");
+
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
-        final List<String> spinnerList = new ArrayList<>(Arrays.asList(categoryArray));
-        spinner = (Spinner) findViewById(R.id.categorySelection);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(Uploader.this, android.R.layout.simple_spinner_item, spinnerList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, final View view, int position, long id) {
+        //final List<String> spinnerList = new ArrayList<>(Arrays.asList(categoryArray));
+        //spinner = (Spinner) findViewById(R.id.categorySelection);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<>(Uploader.this, android.R.layout.simple_spinner_item, spinnerList);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //spinner.setAdapter(adapter);
+        //spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            //@Override
+           // public void onItemSelected(AdapterView<?> parent, final View view, int position, long id) {
                 //Get the selected booking from the spinner
-                categorySelected = spinner.getSelectedItem().toString();
-            }
+                //categorySelected = spinner.getSelectedItem().toString();
+           //}
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                categorySelected = categoryArray[0];
-            }
-        });
+           // @Override
+            //public void onNothingSelected(AdapterView<?> adapterView) {
+                //categorySelected = categoryArray[0];
+            //}
+       // });
 
         init();
 
@@ -91,7 +97,7 @@ public class Uploader extends AppCompatActivity {
                     try{
                         ops.insertData(
                                 edtName.getText().toString().trim(),
-                                imageViewToByte(imageView), categorySelected
+                                imageViewToByte(imageView), categorySelected, user
                         );
                         Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
                         edtName.setText("");

@@ -73,14 +73,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      *
      */
     private PecsImages[] categories = {
-            new PecsImages("Add Category", R.drawable.home,1),
-            new PecsImages("Favourites", R.drawable.home,1),
             new PecsImages("At Home", R.drawable.home,1),
-            new PecsImages("About Me", R.drawable.home,1),
-            new PecsImages("Food And Drink", R.drawable.home,1),
+            new PecsImages("Add Category", R.drawable.addcategory,1),
+            new PecsImages("Favourites", R.drawable.favourites,1),
+            new PecsImages("About Me", R.drawable.seeyou,1),
             new PecsImages("Greetings", R.drawable.home,1),
+            new PecsImages("Food And Drink", R.drawable.home,1),
             new PecsImages("Leisure", R.drawable.home,1),
-            new PecsImages("Today's Activities", R.drawable.home,1)
+            new PecsImages("Today's Activities", R.drawable.schedule,1)
     };
 
     /**
@@ -110,7 +110,10 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      */
     private List<PecsImages> sentenceWords;
 
-
+    /**
+     *
+     */
+    String user = "Gareth";
 
 
     /**
@@ -121,6 +124,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+
+
 
         //
         ops = new DatabaseOperations(getApplicationContext());
@@ -146,7 +151,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
 
         // get all data from sqlite
-        list = ops.getData("Home Page");
+        list = ops.getData("Home Page", user);
         imageCategories.addAll(list);
         imageAdapter.notifyDataSetChanged();
 
@@ -210,6 +215,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
         if (image.getWord().equals("Add Category")) {
             Intent intent2  = new Intent(getApplicationContext(), Uploader.class);
+            intent2.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
+            intent2.putExtra("com.example.gareth.speakitvisualcommunication.page", "Home Page");
             startActivity(intent2);
         } else {
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
@@ -387,7 +394,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     private void updatePecsList() {
         boolean add = true;
         // get all data from sqlite
-        list = ops.getData("Home Page");
+        list = ops.getData("Home Page", user);
         for(PecsImages image : imageCategories) {
             for(PecsImages image2 : list) {
                 if (image.getNumber() != 1 && image.getId() == image2.getId()) {

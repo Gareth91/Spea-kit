@@ -53,10 +53,10 @@ public class DatabaseOperations {
      *
      * @return
      */
-    public List<PecsImages> getData(String categorySelected) {
+    public List<PecsImages> getData(String categorySelected, String user) {
         // get all data from sqlite
         List<PecsImages> imagesList = new ArrayList<>();
-        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Table_Name+" where "+SQLiteHelper.category+" = ?",new String[]{categorySelected});
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.Table_Name+" where "+SQLiteHelper.category+" = ? AND "+SQLiteHelper.userName+" = ?",new String[]{categorySelected, user});
         //if there are images present
         if(cursor.getCount() > 0) {
             //Move to the first row
@@ -67,7 +67,8 @@ public class DatabaseOperations {
                 byte[] images = cursor.getBlob(2);
                 String category = cursor.getString(3);
                 int number = cursor.getInt(4);
-                imagesList.add(new PecsImages(word, images, id, category, number));
+                String userName = cursor.getString(5);
+                imagesList.add(new PecsImages(word, images, id, category, userName, number));
             } while (cursor.moveToNext());
         }
         return imagesList;
@@ -116,7 +117,8 @@ public class DatabaseOperations {
                 byte[] images = cursor.getBlob(2);
                 String category = cursor.getString(3);
                 int number = cursor.getInt(4);
-                image = new PecsImages(word, images, id, category, number);
+                String userName = cursor.getString(5);
+                image = new PecsImages(word, images, id, category, userName, number);
             } while (cursor.moveToNext());
         }
         return image;
@@ -129,7 +131,7 @@ public class DatabaseOperations {
      * @param images
      * @param category
      */
-    public void insertData(String word, byte[] images, String category) {
+    public void insertData(String word, byte[] images, String category, String userName) {
 
         ContentValues values = new ContentValues();
 
@@ -138,6 +140,7 @@ public class DatabaseOperations {
         values.put(SQLiteHelper.image, images);
         values.put(SQLiteHelper.category, category);
         values.put(SQLiteHelper.number, 2);
+        values.put(SQLiteHelper.userName, userName);
 
         database.insert(SQLiteHelper.Table_Name, null, values);
 
