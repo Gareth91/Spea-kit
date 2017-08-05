@@ -102,6 +102,13 @@ public class ActionWords extends AppCompatActivity implements AdapterView.OnItem
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     * @param adapterView
+     * @param view
+     * @param position
+     * @param l
+     */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         PecsImages image = imageWords.get(position);
@@ -165,10 +172,6 @@ public class ActionWords extends AppCompatActivity implements AdapterView.OnItem
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
         }
     }
-
-
-
-
 
     /**
      * onResume method

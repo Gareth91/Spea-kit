@@ -18,5 +18,9 @@
     <string name="Good_Morning">Good Morning</string>
     <string name="I_Want">I Want</string>
     <string name="Add_Word">Add Word</string>
+    <string name="speak">Speak</string>
+    <string name="user_page">User Page</string>
+    <string name="upload">Upload</string>
+
 
 </resources>

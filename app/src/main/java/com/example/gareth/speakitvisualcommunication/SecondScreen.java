@@ -18,6 +18,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -202,7 +204,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 if (image.getWord().equals("Action Words")) {
                     Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
                     startActivity(actionWords);
-                } else if (image.getWord().equals("Add Category")) {
+                } else if (image.getWord().equals("Add Word")) {
                     Intent upload = new Intent(getApplicationContext(), Uploader.class);
                     upload.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
                     upload.putExtra("com.example.gareth.speakitvisualcommunication.page", category);
@@ -361,6 +363,20 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     }
 
     /**
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_second, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
+    /**
      * Method for the selection of the home button
      * @param item
      * @return
@@ -371,6 +387,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
                 finish();
+                return true;
+            case R.id.account2:
                 return true;
         }
         return super.onOptionsItemSelected(item);

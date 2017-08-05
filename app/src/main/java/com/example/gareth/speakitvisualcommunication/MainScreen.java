@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -498,6 +501,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+
     /**
      * onResume method
      */
@@ -514,6 +518,40 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         mAdapter.notifyDataSetChanged();
 
     }
+
+    /**
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * On selecting action bar icons
+     * */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Take appropriate action for each action item click
+        switch (item.getItemId()) {
+            case R.id.speak:
+                return true;
+            case R.id.account:
+                return true;
+            case R.id.upload:
+                Intent i = new Intent(MainScreen.this, Uploader.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     /**
      *onStop method closes database

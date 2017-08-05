@@ -16,7 +16,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * Database Version
      */
-    private static final int Database_Version = 6;
+    private static final int Database_Version = 7;
 
     /**
      * Database name
