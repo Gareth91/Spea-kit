@@ -73,8 +73,57 @@ public class ActionWords extends AppCompatActivity implements AdapterView.OnItem
         //
         imageWords = new ArrayList<>();
         imageWords.clear();
-        PecsImages image = new PecsImages(getString(R.string.I_Want),R.drawable.seeyou,1);
-        imageWords.add(image);
+        /**
+         * Array containing PecsImages objects which take an image from
+         * drawable resource
+         *
+         * Content created by Ashley 07/08/17
+         */
+        PecsImages[] actionWords = {
+
+                new PecsImages("A", R.drawable.a, 1),
+                new PecsImages("Am", R.drawable.am, 1),
+                new PecsImages("Can", R.drawable.can, 1),
+                new PecsImages("Do", R.drawable.doword, 1),
+                new PecsImages("Eat", R.drawable.eat, 1),
+                new PecsImages("Get", R.drawable.get, 1),
+                new PecsImages("Give", R.drawable.give, 1),
+                new PecsImages("Go", R.drawable.go, 1),
+                new PecsImages("Gone", R.drawable.gone, 1),
+                new PecsImages("Have", R.drawable.have, 1),
+                new PecsImages("He", R.drawable.he, 1),
+                new PecsImages("Help", R.drawable.helpword, 1),
+                new PecsImages("I", R.drawable.i, 1),
+                new PecsImages("Is", R.drawable.is, 1),
+                new PecsImages("It", R.drawable.it, 1),
+                new PecsImages("Know", R.drawable.know, 1),
+                new PecsImages("Like", R.drawable.like, 1),
+                new PecsImages("Make", R.drawable.make, 1),
+                new PecsImages("My", R.drawable.my, 1),
+                new PecsImages("Need", R.drawable.need, 1),
+                new PecsImages("No", R.drawable.no, 1),
+                new PecsImages("Play", R.drawable.playword, 1),
+                new PecsImages("Put", R.drawable.put, 1),
+                new PecsImages("Say", R.drawable.say, 1),
+                new PecsImages("See", R.drawable.see, 1),
+                new PecsImages("She", R.drawable.she, 1),
+                new PecsImages("Sorry", R.drawable.sorry, 1),
+                new PecsImages("Stop", R.drawable.stop, 1),
+                new PecsImages("The", R.drawable.the, 1),
+                new PecsImages("They", R.drawable.they, 1),
+                new PecsImages("Think", R.drawable.think, 1),
+                new PecsImages("Want", R.drawable.want, 1),
+                new PecsImages("We", R.drawable.we, 1),
+                new PecsImages("Will", R.drawable.will, 1),
+                new PecsImages("Yes", R.drawable.yes, 1),
+                new PecsImages("You", R.drawable.you, 1)
+
+        };
+
+        for (PecsImages s : actionWords) {
+            imageWords.add(s);
+
+        }
         final GridView gridView = (GridView)findViewById(R.id.gridviewThird);
         imageAdapter = new ImageAdapter(this, imageWords);
         gridView.setAdapter(imageAdapter);

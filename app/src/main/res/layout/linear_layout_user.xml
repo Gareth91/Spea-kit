@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background= "@drawable/grid_cells_border">
+
+    <FrameLayout
+        android:layout_width="95dp"
+        android:layout_height="90dp"
+        android:background="#ffffff"
+        android:layout_marginTop="25dp">
+
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/user"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textAlignment="center" />
+
+
+
+</LinearLayout>

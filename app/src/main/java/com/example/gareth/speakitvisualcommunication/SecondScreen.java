@@ -58,7 +58,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     /**
      *
      */
-    private List<PecsImages> list;
+    private List<PecsImages> list = new ArrayList<>();
 
     /**
      *
@@ -85,7 +85,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     private String category;
 
-    String user = "Gareth";
+    String user = null;
 
     /**
      *
@@ -108,14 +108,16 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
+
+
         //
         sentenceWords = new ArrayList<>();
 
         //
         imageWords = new ArrayList<>();
         imageWords.clear();
-        PecsImages image = new PecsImages(getString(R.string.Action_Words),R.drawable.seeyou,1);
-        PecsImages addImage = new PecsImages((getString(R.string.Add_Word)), R.drawable.seeyou,1);
+        PecsImages image = new PecsImages(getString(R.string.Action_Words),R.drawable.actionwords,1);
+        PecsImages addImage = new PecsImages((getString(R.string.Add_Word)), R.drawable.addcategory,1);
         imageWords.add(addImage);
         imageWords.add(image);
 
@@ -123,25 +125,93 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         //
         Intent intent = getIntent();
         category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
-        list = ops.getData(category, user);
+        Intent intent2 = getIntent();
+        user = intent2.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
+        if (user != null) {
+            list = ops.getData(category, user);
+        }
         switch (category){
             case "Favourites":
                 break;
             case "At Home":
                 break;
             case "About Me":
+                PecsImages[] AboutMe = {
+                        new PecsImages("Angry",R.drawable.angry,1),
+                        new PecsImages("Anxious",R.drawable.anxious,1),
+                        new PecsImages("Arm",R.drawable.arm,1),
+                        new PecsImages("Back",R.drawable.back,1),
+                        new PecsImages("Dont touch",R.drawable.donttouch,1),
+                        new PecsImages("ear",R.drawable.ear,1),
+                        new PecsImages("Excited",R.drawable.excited,1),
+                        new PecsImages("Eye",R.drawable.eye,1),
+                        new PecsImages("Foot",R.drawable.foot,1),
+                        new PecsImages("Go Away",R.drawable.goaway,1),
+                        new PecsImages("Hair",R.drawable.hair,1),
+                        new PecsImages("Hand",R.drawable.hand,1),
+                        new PecsImages("Happy",R.drawable.happy,1),
+                        new PecsImages("Head",R.drawable.head,1),
+                        new PecsImages("Help",R.drawable.help,1),
+                        new PecsImages("Leg",R.drawable.leg,1),
+                        new PecsImages("Love You",R.drawable.loveyou,1),
+                        new PecsImages("Mouth",R.drawable.mouth,1),
+                        new PecsImages("Nose",R.drawable.nose,1),
+                        new PecsImages("Not Sore",R.drawable.notsore,1),
+                        new PecsImages("Proud",R.drawable.proud,1),
+                        new PecsImages("Sad",R.drawable.sad,1),
+                        new PecsImages("Scared",R.drawable.scared,1),
+                        new PecsImages("Sick",R.drawable.sick,1),
+                        new PecsImages("Stomach",R.drawable.stomach,1),
+                        new PecsImages("Sore",R.drawable.sore,1),
+                };
+                for (PecsImages s : AboutMe) {
+                    imageWords.add(s);
+                }
                 break;
-            case "Food and Drink":
+            case "Food And Drink":
+                PecsImages[] FoodAndDrink = {
+                        new PecsImages("Breakfast",R.drawable.breakfast,1),
+                        new PecsImages("Lunch",R.drawable.lunch,1),
+                        new PecsImages("Dinner",R.drawable.dinner,1),
+                        new PecsImages("Snacks",R.drawable.snacks,1),
+                        new PecsImages("Drinks",R.drawable.drinks,1),
+
+                };
+                for (PecsImages s : FoodAndDrink) {
+                    imageWords.add(s);
+                }
                 break;
             case "Greetings":
-                PecsImages image2 = new PecsImages(getString(R.string.Good_Morning),R.drawable.home,1);
-                PecsImages image3 = new PecsImages("What's your name?",R.drawable.home,1);
-                PecsImages image4 = new PecsImages("See you later",R.drawable.home,1);
-                imageWords.add(image2);
-                imageWords.add(image3);
-                imageWords.add(image4);
+                PecsImages[] Greetings = {
+                        new PecsImages("Hello",R.drawable.hello,1),
+                        new PecsImages("Good Morning",R.drawable.morning,1),
+                        new PecsImages("Good Night",R.drawable.night,1),
+                        new PecsImages("What's Your Name?",R.drawable.question,1),
+                        new PecsImages("See You Later",R.drawable.goodbye,1),
+                        new PecsImages("How Are You?",R.drawable.question,1),
+                        new PecsImages("Would You Like To Join?",R.drawable.question,1),
+                        new PecsImages("My Name Is",R.drawable.goodbye,1),
+                        new PecsImages("Nice To Meet You",R.drawable.goodbye,1),
+                };
+                for (PecsImages s : Greetings) {
+                    imageWords.add(s);
+                }
                 break;
             case "Leisure":
+                PecsImages[] Leisure = {
+                        new PecsImages("Walk",R.drawable.walk,1),
+                        new PecsImages("Basketball",R.drawable.basketball,1),
+                        new PecsImages("Swing",R.drawable.swing,1),
+                        new PecsImages("Playstation",R.drawable.playstation,1),
+                        new PecsImages("TV",R.drawable.tv,1),
+                        new PecsImages("Computer",R.drawable.computer,1),
+                        new PecsImages("Football",R.drawable.football,1),
+                        new PecsImages("Cinema",R.drawable.cinema,1),
+                        new PecsImages("Cycling",R.drawable.cycle,1),
+                };
+                for (PecsImages s : Leisure) {
+                    imageWords.add(s);
+                }
                 break;
             case "Today's Activities":
                 break;
@@ -389,6 +459,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 finish();
                 return true;
             case R.id.account2:
+                Intent intent = new Intent(SecondScreen.this, UserSelect.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -510,19 +582,21 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     private void updatePecsList() {
         boolean add = true;
-        // get all data from sqlite
-        list = ops.getData(category, user);
-        for(PecsImages image : imageWords) {
-            for(PecsImages image2 : list) {
-                if (image.getNumber() != 1 && image.getId() == image2.getId()) {
-                    add = false;
-                    break;
+        if(user != null) {
+            // get all data from sqlite
+            list = ops.getData(category, user);
+            for (PecsImages image : imageWords) {
+                for (PecsImages image2 : list) {
+                    if (image.getNumber() != 1 && image.getId() == image2.getId()) {
+                        add = false;
+                        break;
+                    }
                 }
             }
-        }
-        if (add == true) {
-            imageWords.addAll(list);
-            imageAdapter.notifyDataSetChanged();
+            if (add == true) {
+                imageWords.addAll(list);
+                imageAdapter.notifyDataSetChanged();
+            }
         }
 
     }

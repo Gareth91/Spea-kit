@@ -100,6 +100,11 @@ public class Uploader extends AppCompatActivity {
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.User");
         categorySelected = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.page");
 
+        if (user == null) {
+            Toast.makeText(this, "Please select a User", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
@@ -346,6 +351,8 @@ public class Uploader extends AppCompatActivity {
                 finish();
                 return true;
             case R.id.account2:
+                Intent intent = new Intent(Uploader.this, UserSelect.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

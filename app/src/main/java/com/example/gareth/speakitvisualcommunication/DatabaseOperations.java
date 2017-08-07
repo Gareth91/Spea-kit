@@ -145,6 +145,89 @@ public class DatabaseOperations {
 
     }
 
+    /**
+     *
+     * @param username - The word to be entered
+     * @param images - the image to be entered
+     */
+    public void insertUser(String username, byte[] images, String logName) {
+
+        ContentValues values = new ContentValues();
+
+        //Add the booking date, company name, category and customer id to booking table
+        values.put(SQLiteHelper.userName, username);
+        values.put(SQLiteHelper.image, images);
+        values.put(SQLiteHelper.logName, logName);
+
+        database.insert(SQLiteHelper.User_Table, null, values);
+
+    }
+
+    /**
+     *
+     * @return
+     */
+    public List<User> getUsers(String logName) {
+        // get all data from sqlite
+        List<User> userList = new ArrayList<>();
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table+" where "+SQLiteHelper.logName+" = ?", new String[]{logName});
+        //if there are images present
+        if(cursor.getCount() > 0) {
+            //Move to the first row
+            cursor.moveToFirst();
+            do {
+                String name = cursor.getString(0);
+                byte[] image = cursor.getBlob(1);
+                userList.add(new User(name, image));
+            } while (cursor.moveToNext());
+        }
+        return userList;
+    }
+
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    public String getUserName(String user) {
+        // get all data from sqlite
+        String userName = null;
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table +" where "+SQLiteHelper.userName+ " = ?", new String[]{user});
+        //if there are images present
+        if(cursor.getCount() > 0) {
+            //Move to the first row
+            cursor.moveToFirst();
+            do {
+                 userName= cursor.getString(0);
+            } while (cursor.moveToNext());
+        }
+        return userName;
+    }
+
+    /**
+     *
+     * @param user
+     * @return
+     */
+    public User getUser(String user, String logName) {
+        // get all data from sqlite
+        User person = null;
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table +" where "+SQLiteHelper.userName+ " = ? And "+SQLiteHelper.logName+" = ?", new String[]{user, logName});
+        //if there are images present
+        if(cursor.getCount() > 0) {
+            //Move to the first row
+            cursor.moveToFirst();
+            do {
+                String name = cursor.getString(0);
+                byte[] image = cursor.getBlob(1);
+                person = new User(name, image);
+            } while (cursor.moveToNext());
+        }
+        return person;
+    }
+
+
 
     /**
      * Inserts objects into the table containing PecsImages objects for the RecyclerView
@@ -185,6 +268,23 @@ public class DatabaseOperations {
 
     }
 
+    /**
+     * Updates information of an object within the table associated with the GridView
+     * @param name
+     * @param images
+     */
+    public void updateUser(String name, byte[] images, String logName) {
+
+        ContentValues values = new ContentValues();
+
+        //Add the booking date, company name and customer id to booking table
+        values.put(SQLiteHelper.userName, name);
+        values.put(SQLiteHelper.image, images);
+        values.put(SQLiteHelper.logName, logName);
+
+        database.update(SQLiteHelper.User_Table, values, SQLiteHelper.userName+" = ?", new String[]{name});
+
+    }
 
     /**
      * Deletes objects from the table associated with the GridView
@@ -206,6 +306,14 @@ public class DatabaseOperations {
 
     }
 
+    /**
+     * Deletes objects from the table associated with the GridView
+     */
+    public void deleteUser(String username) {
+
+        database.delete(SQLiteHelper.User_Table, SQLiteHelper.userName+" = ?",new String[]{username});
+
+    }
 
 
 }

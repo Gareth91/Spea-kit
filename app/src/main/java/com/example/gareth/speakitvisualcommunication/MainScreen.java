@@ -82,13 +82,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      * drawable resource
      */
     private PecsImages[] categories = {
-            new PecsImages("At Home", R.drawable.home,1),
+
             new PecsImages("Add Category", R.drawable.addcategory,1),
+            new PecsImages("At Home", R.drawable.home,1),
             new PecsImages("Favourites", R.drawable.favourites,1),
-            new PecsImages("About Me", R.drawable.seeyou,1),
-            new PecsImages("Greetings", R.drawable.home,1),
-            new PecsImages("Food And Drink", R.drawable.home,1),
-            new PecsImages("Leisure", R.drawable.home,1),
+            new PecsImages("About Me", R.drawable.aboutme,1),
+            new PecsImages("Greetings", R.drawable.seeyou,1),
+            new PecsImages("Food And Drink", R.drawable.foodanddrink,1),
+            new PecsImages("Leisure", R.drawable.leisure,1),
             new PecsImages("Today's Activities", R.drawable.schedule,1)
     };
 
@@ -123,7 +124,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     /**
      * User
      */
-    String user = "Gareth";
+    String user = null;
 
 
     /**
@@ -139,6 +140,9 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         // instance of the DatabaseOperations class
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
+
+        Intent intent = getIntent();
+        user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username");
 
         // Add the array containing PecsImages objects to the
         // imageCategories list which is then added to the GridView
@@ -163,12 +167,15 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         recyclerView.setAdapter(mAdapter);
 
 
-        // get all data from SQLite which are associated with the
-        // Home Page and the user. Then added to the imageCategories list
-        // and ImageAdapter class is notified to update what is shown on screen
-        list = ops.getData("Home Page", user);
-        imageCategories.addAll(list);
-        imageAdapter.notifyDataSetChanged();
+        if (user != null) {
+            // get all data from SQLite which are associated with the
+            // Home Page and the user. Then added to the imageCategories list
+            // and ImageAdapter class is notified to update what is shown on screen
+            list = ops.getData("Home Page", user);
+            imageCategories.addAll(list);
+            imageAdapter.notifyDataSetChanged();
+        }
+
 
         // onItemClickListener setup on GridView to allow images to be selected
         gridView.setOnItemClickListener(this);
@@ -244,6 +251,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             //if any other item is selected it takes you to the second screen.
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
+            intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
             startActivity(intent);
         }
 
@@ -460,21 +468,23 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      */
     private void updatePecsList() {
         boolean add = true;
-        // get all data from sqlite
-        list = ops.getData("Home Page", user);
-        //Check to see if any new objects have been added
-        for(PecsImages image : imageCategories) {
-            for(PecsImages image2 : list) {
-                if (image.getNumber() != 1 && image.getId() == image2.getId()) {
-                    add = false;
-                    break;
+        if (user != null) {
+            // get all data from sqlite
+            list = ops.getData("Home Page", user);
+            //Check to see if any new objects have been added
+            for(PecsImages image : imageCategories) {
+                for(PecsImages image2 : list) {
+                    if (image.getNumber() != 1 && image.getId() == image2.getId()) {
+                        add = false;
+                        break;
+                    }
                 }
             }
-        }
-        //If new objects have been added then the list is updated and the ImageAdapter is notified.
-        if (add == true) {
-            imageCategories.addAll(list);
-            imageAdapter.notifyDataSetChanged();
+            //If new objects have been added then the list is updated and the ImageAdapter is notified.
+            if (add == true) {
+                imageCategories.addAll(list);
+                imageAdapter.notifyDataSetChanged();
+            }
         }
 
     }
@@ -542,6 +552,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             case R.id.speak:
                 return true;
             case R.id.account:
+                Intent intent = new Intent(MainScreen.this, UserSelect.class);
+                startActivity(intent);
                 return true;
             case R.id.upload:
                 Intent i = new Intent(MainScreen.this, Uploader.class);
