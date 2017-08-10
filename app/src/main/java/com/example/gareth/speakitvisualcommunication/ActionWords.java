@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -249,5 +250,10 @@ public class ActionWords extends AppCompatActivity implements AdapterView.OnItem
         super.onDestroy();
         //Calling the close method to close the database.
         ops.close();
+        if (myTTS != null) {
+            myTTS.stop();
+            myTTS.shutdown();
+        }
+
     }
 }

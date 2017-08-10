@@ -10,20 +10,20 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_height="80dp"
-        android:layout_width="325dp"
+        android:layout_width="310dp"
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:background="@drawable/sentence_builder_border"
         />
 
-    <ImageButton
+    <!--<ImageButton
         android:id="@+id/speakB"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:background="@drawable/sentence_builder_border"
         android:src="@drawable/play"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/recyclerView" />
+        android:layout_toEndOf="@+id/recyclerView" />-->
 
     <ImageButton
         android:id="@+id/deleteB"
@@ -33,7 +33,8 @@
         android:src="@drawable/delete"
         android:layout_alignParentEnd="true"
         android:layout_toEndOf="@+id/recyclerView"
-        android:layout_below="@+id/speakB" />
+        android:layout_above="@+id/gridview"
+        android:layout_alignParentTop="true" />
 
     <GridView
         android:id="@+id/gridview"

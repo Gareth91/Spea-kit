@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -222,7 +223,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         ImageButton cancelButton = (ImageButton) findViewById(R.id.deleteB);
         cancelButton.setOnClickListener(this);
         ImageButton playButton = (ImageButton) findViewById(R.id.speakB);
-        playButton.setOnClickListener(this);
+        //playButton.setOnClickListener(this);
 
     }
 
@@ -527,6 +528,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         sentenceWords.addAll(list);
         mAdapter.notifyDataSetChanged();
 
+
     }
 
     /**
@@ -549,15 +551,17 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     public boolean onOptionsItemSelected(MenuItem item) {
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
-            case R.id.speak:
-                return true;
             case R.id.account:
                 Intent intent = new Intent(MainScreen.this, UserSelect.class);
                 startActivity(intent);
                 return true;
-            case R.id.upload:
-                Intent i = new Intent(MainScreen.this, Uploader.class);
-                startActivity(i);
+            case R.id.action_play:
+                //The words from the different items in the view are added together and then spoken aloud
+                StringBuilder finalStringb =new StringBuilder();
+                for (PecsImages image : sentenceWords) {
+                    finalStringb.append(image.getWord()).append(" ");
+                }
+                speakWords(finalStringb.toString());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -574,6 +578,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         ops.close();
     }
 
+
     /**
      * When the activity is finished the method will close the  SQLite database.
      */
@@ -582,6 +587,11 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onDestroy();
         //Calling the close method to close the database.
         ops.close();
+
+        if(myTTS != null) {
+            myTTS.stop();
+            myTTS.shutdown();
+        }
     }
 
 

@@ -306,6 +306,8 @@ public class DatabaseOperations {
 
     }
 
+
+
     /**
      * Deletes objects from the table associated with the GridView
      */

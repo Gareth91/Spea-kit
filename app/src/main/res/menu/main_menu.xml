@@ -3,17 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/speak"
-        android:title="@string/speak"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/account"
         android:title="@string/user_page"
         app:showAsAction="never" />
+
     <item
-        android:id="@+id/upload"
-        android:title="@string/upload"
-        app:showAsAction="never" />
+        android:id="@+id/action_play"
+        android:icon="@drawable/player"
+        android:title="Play"
+        app:showAsAction="ifRoom"/>
 
 </menu>

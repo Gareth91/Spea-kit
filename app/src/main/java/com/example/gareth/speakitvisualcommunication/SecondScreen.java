@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.PersistableBundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -581,24 +582,16 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      *
      */
     private void updatePecsList() {
-        boolean add = true;
-        if(user != null) {
-            // get all data from sqlite
-            list = ops.getData(category, user);
+        if (user != null) {
             for (PecsImages image : imageWords) {
-                for (PecsImages image2 : list) {
-                    if (image.getNumber() != 1 && image.getId() == image2.getId()) {
-                        add = false;
-                        break;
-                    }
+                if (image.getNumber() == 2) {
+                    imageWords.remove(image);
                 }
             }
-            if (add == true) {
-                imageWords.addAll(list);
-                imageAdapter.notifyDataSetChanged();
-            }
+            list = ops.getData(category, user);
+            imageWords.addAll(list);
+            imageAdapter.notifyDataSetChanged();
         }
-
     }
 
 
@@ -637,6 +630,11 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         super.onDestroy();
         //Calling the close method to close the database.
         ops.close();
+        if (myTTS != null) {
+            myTTS.stop();
+            myTTS.shutdown();
+        }
+
     }
 
 

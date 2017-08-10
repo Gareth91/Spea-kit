@@ -18,6 +18,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -135,9 +136,15 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+        List<PecsImages> list = new ArrayList<>();
+        list = ops.getSentenceData();
+        for (PecsImages image: list) {
+            ops.deleteSentenceData(image.getId());
+        }
         User user = userList.get(position);
         Intent intent = new Intent(this, MainScreen.class);
         intent.putExtra("com.example.gareth.speakitvisualcommunication.username", user.getUserName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -431,6 +438,22 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
             }
         });
         dialogDelete.show();
+    }
+
+    /**
+     * Method for the selection of the home button
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 
