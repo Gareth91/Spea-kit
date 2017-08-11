@@ -46,7 +46,7 @@ import java.util.Locale;
 /**
  * Class used to create the main screen of the app
  */
-public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, View.OnClickListener{
+public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, View.OnClickListener, View.OnLongClickListener{
 
     /**
      * TTS object
@@ -126,6 +126,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      * User
      */
     String user = null;
+    String user2 = null;
 
 
     /**
@@ -144,21 +145,38 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
         Intent intent = getIntent();
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username");
+        user2 = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
 
         // Add the array containing PecsImages objects to the
         // imageCategories list which is then added to the GridView
         // using the ImageAdapter class
         imageCategories = new ArrayList<>(Arrays.asList(categories));
+        if (user != null && user == null) {
+            List<PecsImages> list2 = ops.getData("Home Page", user);
+            imageCategories.addAll(list2);
+        } else if (user == null && user2 != null) {
+            List<PecsImages> list2 = ops.getData("Home Page", user2);
+            imageCategories.addAll(list2);
+        }
+        if (user == null) {
+            user = user2;
+        }
         gridView = (GridView)findViewById(R.id.gridview);
         imageAdapter = new ImageAdapter(this, imageCategories);
         gridView.setAdapter(imageAdapter);
 
+        List<PecsImages> list = new ArrayList<>();
+        list = ops.getSentenceData();
+        for (PecsImages image: list) {
+            ops.deleteSentenceData(image.getId());
+        }
+
         // List sentence words is created and then PecsImages objects
         // in the sentence table ar added to the list using method from DatabaseOperations class.
         sentenceWords = new ArrayList<>();
-        List<PecsImages> list = new ArrayList<>();
-        list = ops.getSentenceData();
-        sentenceWords.addAll(list);
+        //List<PecsImages> list = new ArrayList<>();
+        //list = ops.getSentenceData();
+        //sentenceWords.addAll(list);
         // sentenceWords List is then added to the RecyclerView using
         // SentenceBuilderAdapter class.
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -166,16 +184,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         RecyclerView.LayoutManager mLayoutManage = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(mLayoutManage);
         recyclerView.setAdapter(mAdapter);
-
-
-        if (user != null) {
-            // get all data from SQLite which are associated with the
-            // Home Page and the user. Then added to the imageCategories list
-            // and ImageAdapter class is notified to update what is shown on screen
-            list = ops.getData("Home Page", user);
-            imageCategories.addAll(list);
-            imageAdapter.notifyDataSetChanged();
-        }
 
 
         // onItemClickListener setup on GridView to allow images to be selected
@@ -222,7 +230,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         //the sentence builder.
         ImageButton cancelButton = (ImageButton) findViewById(R.id.deleteB);
         cancelButton.setOnClickListener(this);
-        ImageButton playButton = (ImageButton) findViewById(R.id.speakB);
+        cancelButton.setOnLongClickListener(this);
+        //ImageButton playButton = (ImageButton) findViewById(R.id.speakB);
         //playButton.setOnClickListener(this);
 
     }
@@ -275,19 +284,36 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
                 }
                 break;
-            case R.id.speakB:
+            //case R.id.speakB:
                 //The words from the different items in the view are added together and then spoken aloud
-                StringBuilder finalStringb =new StringBuilder();
-                for (PecsImages item : sentenceWords) {
-                    finalStringb.append(item.getWord()).append(" ");
-                }
-                speakWords(finalStringb.toString());
-                break;
+                //StringBuilder finalStringb =new StringBuilder();
+                //for (PecsImages item : sentenceWords) {
+                    //finalStringb.append(item.getWord()).append(" ");
+                //}
+                //speakWords(finalStringb.toString());
+                //break;
             default:
                 break;
         }
     }
 
+    @Override
+    public boolean onLongClick(View v) {
+        switch (v.getId()) {
+            case R.id.deleteB:
+                List<PecsImages> list = new ArrayList<>();
+                list = ops.getSentenceData();
+                for (PecsImages image: list) {
+                    ops.deleteSentenceData(image.getId());
+                }
+                sentenceWords.clear();
+                mAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return false;
+        }
+
+    }
 
     /**
      * Method called to speak words aloud
@@ -464,31 +490,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         dialogDelete.show();
     }
 
-    /**
-     *Method will update the List used to populate the GridView.
-     */
-    private void updatePecsList() {
-        boolean add = true;
-        if (user != null) {
-            // get all data from sqlite
-            list = ops.getData("Home Page", user);
-            //Check to see if any new objects have been added
-            for(PecsImages image : imageCategories) {
-                for(PecsImages image2 : list) {
-                    if (image.getNumber() != 1 && image.getId() == image2.getId()) {
-                        add = false;
-                        break;
-                    }
-                }
-            }
-            //If new objects have been added then the list is updated and the ImageAdapter is notified.
-            if (add == true) {
-                imageCategories.addAll(list);
-                imageAdapter.notifyDataSetChanged();
-            }
-        }
 
-    }
 
     /**
      *Permission to use image
@@ -512,6 +514,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    /**
+     *Method will update the List used to populate the GridView.
+     */
+    private void updatePecsList() {
+
+
+
+    }
 
     /**
      * onResume method
@@ -585,6 +595,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         //Calling the close method to close the database.
         ops.close();
 

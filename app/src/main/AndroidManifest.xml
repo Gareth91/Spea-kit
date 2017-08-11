@@ -15,7 +15,7 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainScreen">
+        <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,11 +24,13 @@
         </activity>
         <activity android:name=".SecondScreen" />
         <activity
+
             android:name=".ActionWords"
             android:theme="@style/AppTheme.CustomTheme2" />
         <activity android:name=".Uploader" />
+        <activity android:name=".MainScreen" />
         <activity android:name=".CreateUser" />
-        <activity android:name=".UserSelect"></activity>
+        <activity android:name=".UserSelect" />
     </application>
 
 </manifest>

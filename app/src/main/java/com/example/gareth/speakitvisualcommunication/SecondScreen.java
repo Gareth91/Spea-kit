@@ -38,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-public class SecondScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, AdapterView.OnItemLongClickListener, View.OnClickListener{
+public class SecondScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, AdapterView.OnItemLongClickListener, View.OnClickListener, View.OnLongClickListener{
 
     //TTS object
     private TextToSpeech myTTS;
@@ -241,8 +241,9 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
 
         ImageButton cancelButton = (ImageButton) findViewById(R.id.deleteB2);
         cancelButton.setOnClickListener(this);
-        ImageButton playButton = (ImageButton) findViewById(R.id.speakB2);
-        playButton.setOnClickListener(this);
+        cancelButton.setOnLongClickListener(this);
+        //ImageButton playButton = (ImageButton) findViewById(R.id.speakB2);
+        //playButton.setOnClickListener(this);
 
 
 
@@ -373,18 +374,38 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     mAdapter.notifyDataSetChanged();
                 }
                 break;
-            case R.id.speakB2:
-                StringBuilder finalStringb =new StringBuilder();
-                for (PecsImages item : sentenceWords) {
-                    finalStringb.append(item.getWord()).append(" ");
-                }
-                speakWords(finalStringb.toString());
+            //case R.id.speakB2:
+               // StringBuilder finalStringb =new StringBuilder();
+               // for (PecsImages item : sentenceWords) {
+                  //  finalStringb.append(item.getWord()).append(" ");
+              //  }
+              //  speakWords(finalStringb.toString());
 
-                break;
+              //  break;
             default:
                 break;
         }
     }
+
+
+    @Override
+    public boolean onLongClick(View v) {
+        switch (v.getId()) {
+            case R.id.deleteB2:
+                List<PecsImages> list = new ArrayList<>();
+                list = ops.getSentenceData();
+                for (PecsImages image: list) {
+                    ops.deleteSentenceData(image.getId());
+                }
+                sentenceWords.clear();
+                mAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return false;
+        }
+
+    }
+
 
     /**
      *
@@ -441,7 +462,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_second, menu);
+        inflater.inflate(R.menu.main_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -459,9 +480,17 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.account2:
+            case R.id.account:
                 Intent intent = new Intent(SecondScreen.this, UserSelect.class);
                 startActivity(intent);
+                return true;
+            case R.id.action_play:
+                //The words from the different items in the view are added together and then spoken aloud
+                StringBuilder finalStringb =new StringBuilder();
+                for (PecsImages image : sentenceWords) {
+                    finalStringb.append(image.getWord()).append(" ");
+                }
+                speakWords(finalStringb.toString());
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -582,16 +611,16 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      *
      */
     private void updatePecsList() {
-        if (user != null) {
-            for (PecsImages image : imageWords) {
-                if (image.getNumber() == 2) {
-                    imageWords.remove(image);
-                }
-            }
-            list = ops.getData(category, user);
-            imageWords.addAll(list);
-            imageAdapter.notifyDataSetChanged();
-        }
+        //if (user != null) {
+            //for (PecsImages image : imageWords) {
+               // if (image.getNumber() == 2) {
+                  //  imageWords.remove(image);
+                //}
+           // }
+           // list = ops.getData(category, user);
+           // imageWords.addAll(list);
+           // imageAdapter.notifyDataSetChanged();
+        //}
     }
 
 

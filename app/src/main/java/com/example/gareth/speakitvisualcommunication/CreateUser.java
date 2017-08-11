@@ -98,7 +98,7 @@ public class CreateUser extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         login = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.login");
 
         ops = new DatabaseOperations(getApplicationContext());
@@ -113,6 +113,15 @@ public class CreateUser extends AppCompatActivity {
             }
 
         });
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+
+        });
+
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,8 +138,9 @@ public class CreateUser extends AppCompatActivity {
                                 imageViewToByte(imageView), login
                         );
                         Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
-                        edtName.setText("");
-                        imageView.setImageResource(R.mipmap.ic_launcher);
+                        Intent intent = new Intent(CreateUser.this, UserSelect.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
                     }
                     catch (Exception e){
                         e.printStackTrace();
