@@ -44,7 +44,7 @@ public class ServerMain {
         body.put("category", category);
         body.put("username", username);
         body.put("number", number);
-        body.put("image", BitMapToString(bitmapImage));
+        body.put("images", BitMapToString(bitmapImage));
 
         String contentType =  "application/json";
         VolleyRequest request =   new VolleyRequest(context, VolleyHelp.methodDescription.POST, contentType, url, headers, body);

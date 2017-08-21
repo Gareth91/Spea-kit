@@ -241,8 +241,10 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose2);
 
 
+
+
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
-        String BASE_URL = "http://10.0.22:5000/project/getOneUser";
+        String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -258,18 +260,16 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
             public void onSuccess(String result){
                 System.out.print("CALLBACK SUCCESS: " + result);
 
-                JSONArray jsonarray = null;
+                JSONObject jsonObject = null;
                 try {
-                    jsonarray = new JSONArray(result);
-                    for (int loop = 0; loop < jsonarray.length(); loop++) {
-                        JSONObject jsonobject = jsonarray.getJSONObject(loop);
-                        String username = jsonobject.getString("username");
-                        byte [] image= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
-                        User users = new User(username, image);
-                        edtName.setText(users.getUserName());
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(users.getImage(), 0, users.getImage().length);
-                        imageView.setImageBitmap(bitmap);
-                    }
+                    jsonObject = new JSONObject(result);
+                    String username = jsonObject.getString("username");
+                    byte [] image= Base64.decode(jsonObject.getString("image"),Base64.DEFAULT);
+                    User users = new User(username, image);
+                    edtName.setText(users.getUserName());
+                    edtName.setTextSize(22);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(users.getImage(), 0, users.getImage().length);
+                    imageView.setImageBitmap(bitmap);
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -317,7 +317,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                     HashMap<String, String> body  = new HashMap<>();
 
                     body.put("username", edtName.getText().toString());
-                    body.put("image", ((BitmapDrawable)imageView.getDrawable()).getBitmap().toString());
+                    Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                    body.put("image", BitMapToString(bitmap));
 
                     String contentType =  "application/json";
                     VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.PUT, contentType, url, headers, body);
@@ -350,17 +351,14 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                                         public void onSuccess(String result){
                                             System.out.print("CALLBACK SUCCESS: " + result);
 
-                                            JSONArray jsonarray = null;
-                                            try {
-                                                jsonarray = new JSONArray(result);
 
-                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
-                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
-                                                    String username = jsonobject.getString("username");
-                                                    byte [] image= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
-                                                    User user = new User(username, image);
-                                                    userList.add(user);
-                                                }
+                                            JSONObject jsonObject = null;
+                                            try {
+                                                jsonObject = new JSONObject(result);
+                                                String username = jsonObject.getString("username");
+                                                byte [] image= Base64.decode(jsonObject.getString("image"),Base64.DEFAULT);
+                                                User user = new User(username, image);
+                                                userList.add(user);
                                                 userAdapter.notifyDataSetChanged();
                                                 Toast.makeText(UserSelect.this, "Update Success ", Toast.LENGTH_LONG).show();
                                             }catch (JSONException e) {
@@ -576,7 +574,7 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                     body.put("username", userName);
 
                     String contentType =  "application/json";
-                    VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.DELETE, contentType, url, headers, body);
+                    VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
 
                     request.serviceJsonCall(new VolleyCallBack(){
                         @Override
@@ -628,6 +626,18 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     *
+     * @param bitmap
+     * @return
+     */
+    public String BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp= Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
+    }
 
 
     /**

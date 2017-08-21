@@ -1,6 +1,5 @@
 package com.example.gareth.speakitvisualcommunication;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,9 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +41,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,6 +88,21 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
      * GridView object
      */
     private GridView gridView;
+
+    /**
+     *
+     */
+    private String userChosen;
+
+    /**
+     *
+     */
+    final int REQUEST_CODE_GALLERY = 1;
+
+    /**
+     *
+     */
+    final int REQUEST_IMAGE_CAPTURE = 0;
 
     /**
      * Array containing PecsImages objects which take an image from
@@ -182,8 +201,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
             body.put("category", "Home Page");
             body.put("username", user);
-//                body.put("category", "HELP");
-//                body.put("username", "Ashley");
 
             String contentType =  "application/json";
             VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
@@ -192,7 +209,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 @Override
                 public void onSuccess(String result){
                     System.out.print("CALLBACK SUCCESS: " + result);
-                    Toast.makeText(MainScreen.this, "Success ", Toast.LENGTH_LONG).show();
 
                     JSONArray jsonarray = null;
                     try {
@@ -228,8 +244,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
             body.put("category", "Home Page");
             body.put("username", user2);
-//                body.put("category", "HELP");
-//                body.put("username", "Ashley");
 
             String contentType =  "application/json";
             VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
@@ -253,11 +267,9 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                             int number = jsonobject.getInt("number");
                             byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
                             PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
-                            List<PecsImages> list2 = new ArrayList<PecsImages>();
-                            list2.add(pecsImages);
-                            imageCategories.addAll(list2);
-                            imageAdapter.notifyDataSetChanged();
+                            imageCategories.add(pecsImages);
                         }
+                        imageAdapter.notifyDataSetChanged();
                     }catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -434,37 +446,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     }
 
     /**
-     * Act on result of TTS data check
-     */
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == MY_DATA_CHECK_CODE) {
-            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
-                //the user has the necessary data - create the TTS
-                myTTS = new TextToSpeech(this, this);
-            }
-            else {
-                //no data - install it now
-                Intent installTTSIntent = new Intent();
-                installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
-                startActivity(installTTSIntent);
-            }
-        }
-
-        if (requestCode == 888 && resultCode == RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            try {
-                InputStream inputStream = getContentResolver().openInputStream(uri);
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                pecsView.setImageBitmap(bitmap);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 
     /**
      *
@@ -512,12 +493,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         pecsView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // request photo library
-                ActivityCompat.requestPermissions(
-                        MainScreen.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        888
-                );
+                selectImage();
             }
         });
 
@@ -542,7 +518,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                     body.put("id", userId.toString());
                     body.put("word", edtName.getText().toString());
                     body.put("category", "Home Page");
-                    body.put("image", ((BitmapDrawable)pecsView.getDrawable()).getBitmap().toString());
+                    Bitmap bitmap = ((BitmapDrawable)pecsView.getDrawable()).getBitmap();
+                    body.put("images", BitMapToString(bitmap));
 
                     String contentType =  "application/json";
                     VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.PUT, contentType, url, headers, body);
@@ -651,7 +628,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                     body.put("id", deleteId.toString());
 
                     String contentType =  "application/json";
-                    VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.DELETE, contentType, url, headers, body);
+                    VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
 
                     request.serviceJsonCall(new VolleyCallBack(){
                         @Override
@@ -697,27 +674,157 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if (requestCode == 888) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, 888);
-            } else {
-                Toast.makeText(getApplicationContext(), "You don't have permission to access file location!", Toast.LENGTH_SHORT).show();
-            }
-            return;
+        switch (requestCode) {
+            case Utility.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(userChosen.equals("Take Photo"))
+                        cameraIntent();
+                    else if(userChosen.equals("Choose from Library"))
+                        galleryIntent();
+                } else {
+                    //code for deny
+                }
+                break;
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /**
-     *Method will update the List used to populate the GridView.
+     *
      */
-    private void updatePecsList() {
+    private void selectImage() {
+        final CharSequence[] items = { "Take Photo", "Choose from Library",
+                "Cancel" };
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainScreen.this);
+        builder.setTitle("Add Photo");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                boolean result=Utility.checkPermission(MainScreen.this);
 
+                if (items[item].equals("Take Photo")) {
+                    userChosen ="Take Photo";
+                    if(result)
+                        cameraIntent();
+
+                } else if (items[item].equals("Choose from Library")) {
+                    userChosen ="Choose from Library";
+                    if(result)
+                        galleryIntent();
+
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    /**
+     *
+     */
+    private void galleryIntent()
+    {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);//
+        startActivityForResult(Intent.createChooser(intent, "Select File"),REQUEST_CODE_GALLERY);
+    }
+
+    /**
+     *
+     */
+    private void cameraIntent()
+    {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
 
     }
+
+    /**
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    //@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == MY_DATA_CHECK_CODE) {
+            if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
+                //the user has the necessary data - create the TTS
+                myTTS = new TextToSpeech(this, this);
+            }
+//            else {
+//                //no data - install it now
+//                Intent installTTSIntent = new Intent();
+//                installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
+//                startActivity(installTTSIntent);
+           // }
+        }
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_GALLERY) {
+                onSelectFromGalleryResult(data);
+            } else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                onCaptureImageResult(data);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    /**
+     *
+     * @param data
+     */
+    private void onCaptureImageResult(Intent data) {
+        Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        thumbnail.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+
+        File destination = new File(Environment.getExternalStorageDirectory(),
+                System.currentTimeMillis() + ".png");
+
+        FileOutputStream fo;
+        try {
+            destination.createNewFile();
+            fo = new FileOutputStream(destination);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        pecsView.setImageBitmap(thumbnail);
+    }
+
+    /**
+     *
+     * @param data
+     */
+    @SuppressWarnings("deprecation")
+    private void onSelectFromGalleryResult(Intent data) {
+        Uri uri = data.getData();
+        if (data != null) {
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(uri);
+
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                pecsView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
 
     /**
      * onResume method
@@ -726,7 +833,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onResume();
         //Open database
         ops.open();
-        updatePecsList();
         //
         sentenceWords.clear();
         List<PecsImages> list = new ArrayList<>();
@@ -772,6 +878,20 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    /**
+     *
+     * @param bitmap
+     * @return
+     */
+    public String BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp= Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
 

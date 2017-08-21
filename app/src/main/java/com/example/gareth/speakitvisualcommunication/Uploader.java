@@ -161,6 +161,7 @@ public class Uploader extends AppCompatActivity {
 //                        );
                         serverMain.addImageWord(Uploader.this,edtName.getText().toString(), categorySelected, user, "2",((BitmapDrawable)imageView.getDrawable()).getBitmap());
                         //Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
+                        Thread.sleep(700);
                         if (!categorySelected.equals("Home Page")) {
                             Intent intent = new Intent(Uploader.this, SecondScreen.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
