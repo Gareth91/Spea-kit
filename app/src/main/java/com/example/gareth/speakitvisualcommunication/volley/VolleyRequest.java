@@ -156,4 +156,90 @@ public class VolleyRequest {
         VolleyQueue.getInstance(context).add(stringRequest);
         VolleyLogging.logRequest(stringRequest, method, url, headers, body.toString() );
     }
+
+
+    /**
+     * Final VolleyCallback callback
+     */
+    public void serviceJsonCall(final VolleyCallBackReturn callback){
+
+        StringRequest stringRequest = new StringRequest(
+                method,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        VolleyLogging.logResponse(response);
+                        callback.onSuccess(response);
+
+                    }},
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLogging.logErrorResponse(error,url );
+                        int statusCode = 0;
+                        try{
+                            statusCode = error.networkResponse.statusCode;
+                        }catch(Exception ex){
+                            statusCode = -99;
+                        }
+                        callback.onError(new ErrorResponse(statusCode, error.getMessage()));
+                    }}
+        ){
+
+            /**
+             *
+             * @return
+             * @throws AuthFailureError
+             */
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+
+                JSONObject jsonBody = new JSONObject();
+
+                try {
+                    for (Map.Entry<String, String> entry : body.entrySet()) {
+                        jsonBody.put(entry.getKey(), entry.getValue() );
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                String requestBody = jsonBody.toString();
+
+                try {
+                    return requestBody == null ? null : requestBody.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s",
+                            requestBody, "utf-8");
+                    return null;
+                }
+            }
+
+            /**
+             *
+             * @return
+             */
+            @Override
+            public String getBodyContentType() {
+                return contentType;
+            }
+
+            /**
+             *
+             * @return
+             * @throws AuthFailureError
+             */
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return headers;
+            }
+
+        };
+
+        stringRequest.setShouldCache(false);
+        VolleyQueue.getInstance(context).add(stringRequest);
+        VolleyLogging.logRequest(stringRequest, method, url, headers, body.toString() );
+    }
+
 }

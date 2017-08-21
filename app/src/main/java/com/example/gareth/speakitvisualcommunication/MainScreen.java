@@ -6,20 +6,19 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,14 +30,22 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.example.gareth.speakitvisualcommunication.volley.ErrorResponse;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyCallBack;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyHelp;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -123,6 +130,11 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     private List<PecsImages> sentenceWords;
 
     /**
+     *
+     */
+    List<PecsImages> list2 = new ArrayList<PecsImages>();
+
+    /**
      * User
      */
     String user = null;
@@ -138,6 +150,10 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
 
+
+       // ServerMain serverMain = new ServerMain();
+       // serverMain.ImageWord(MainScreen.this);
+
         // Open a connection with the SQLite database using
         // instance of the DatabaseOperations class
         ops = new DatabaseOperations(getApplicationContext());
@@ -147,23 +163,115 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username");
         user2 = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
 
+        imageCategories = new ArrayList<>(Arrays.asList(categories));
+
+        gridView = (GridView)findViewById(R.id.gridview);
+        imageAdapter = new ImageAdapter(this, imageCategories);
+        gridView.setAdapter(imageAdapter);
+
         // Add the array containing PecsImages objects to the
         // imageCategories list which is then added to the GridView
         // using the ImageAdapter class
-        imageCategories = new ArrayList<>(Arrays.asList(categories));
-        if (user != null && user == null) {
-            List<PecsImages> list2 = ops.getData("Home Page", user);
-            imageCategories.addAll(list2);
+        if (user != null && user2 == null) {
+            //List<PecsImages> list2 = ops.getData("Home Page", user);
+            String BASE_URL = "http://10.0.2.2:5000/project/return";
+            String url = BASE_URL;
+
+            HashMap<String, String> headers  = new HashMap<>();
+            HashMap<String, String> body  = new HashMap<>();
+
+            body.put("category", "Home Page");
+            body.put("username", user);
+//                body.put("category", "HELP");
+//                body.put("username", "Ashley");
+
+            String contentType =  "application/json";
+            VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+            request.serviceJsonCall(new VolleyCallBack(){
+                @Override
+                public void onSuccess(String result){
+                    System.out.print("CALLBACK SUCCESS: " + result);
+                    Toast.makeText(MainScreen.this, "Success ", Toast.LENGTH_LONG).show();
+
+                    JSONArray jsonarray = null;
+                    try {
+                        jsonarray = new JSONArray(result);
+
+                        for (int loop = 0; loop < jsonarray.length(); loop++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                            String word = jsonobject.getString("word");
+                            String category = jsonobject.getString("category");
+                            int id = jsonobject.getInt("id");
+                            String username = jsonobject.getString("username");
+                            int number = jsonobject.getInt("number");
+                            byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
+                            PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                            imageCategories.add(pecsImages);
+                        }
+                        imageAdapter.notifyDataSetChanged();
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void onError(ErrorResponse errorResponse){
+                    System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                }
+            });
         } else if (user == null && user2 != null) {
-            List<PecsImages> list2 = ops.getData("Home Page", user2);
-            imageCategories.addAll(list2);
+            String BASE_URL = "http://10.0.2.2:5000/project/return";
+            String url = BASE_URL;
+
+            HashMap<String, String> headers  = new HashMap<>();
+            HashMap<String, String> body  = new HashMap<>();
+
+            body.put("category", "Home Page");
+            body.put("username", user2);
+//                body.put("category", "HELP");
+//                body.put("username", "Ashley");
+
+            String contentType =  "application/json";
+            VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+            request.serviceJsonCall(new VolleyCallBack(){
+                @Override
+                public void onSuccess(String result){
+                    System.out.print("CALLBACK SUCCESS: " + result);
+                    Toast.makeText(MainScreen.this, "Success ", Toast.LENGTH_LONG).show();
+
+                    JSONArray jsonarray = null;
+                    try {
+                        jsonarray = new JSONArray(result);
+
+                        for (int loop = 0; loop < jsonarray.length(); loop++) {
+                            JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                            String word = jsonobject.getString("word");
+                            String category = jsonobject.getString("category");
+                            int id = jsonobject.getInt("id");
+                            String username = jsonobject.getString("username");
+                            int number = jsonobject.getInt("number");
+                            byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
+                            PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                            List<PecsImages> list2 = new ArrayList<PecsImages>();
+                            list2.add(pecsImages);
+                            imageCategories.addAll(list2);
+                            imageAdapter.notifyDataSetChanged();
+                        }
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void onError(ErrorResponse errorResponse){
+                    System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                }
+            });
         }
         if (user == null) {
             user = user2;
         }
-        gridView = (GridView)findViewById(R.id.gridview);
-        imageAdapter = new ImageAdapter(this, imageCategories);
-        gridView.setAdapter(imageAdapter);
+
 
         List<PecsImages> list = new ArrayList<>();
         list = ops.getSentenceData();
@@ -417,24 +525,92 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             @Override
             public void onClick(View v) {
                 try {
-                    ops.updateData(
-                            edtName.getText().toString().trim(),
-                            Uploader.imageViewToByte(pecsView), "Home Page",
-                            id
-                    );
-                    Iterator<PecsImages> iterator = imageCategories.iterator();
-                        while (iterator.hasNext()) {
-                            if(iterator.next().getId() == id) {
-                                iterator.remove();
-                                imageAdapter.notifyDataSetChanged();
-                                PecsImages item = ops.getItem(id);
-                                imageCategories.add(item);
-                                imageAdapter.notifyDataSetChanged();
-                                break;
+//                    ops.updateData(
+//                            edtName.getText().toString().trim(),
+//                            Uploader.imageViewToByte(pecsView), "Home Page",
+//                            id
+//                    );
+
+                    final Integer userId = id;
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateData";
+                    String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+                    String url = BASE_URL;
+
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("id", userId.toString());
+                    body.put("word", edtName.getText().toString());
+                    body.put("category", "Home Page");
+                    body.put("image", ((BitmapDrawable)pecsView.getDrawable()).getBitmap().toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.PUT, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                            Iterator<PecsImages> iterator = imageCategories.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getId() == id) {
+                                    iterator.remove();
+                                    imageAdapter.notifyDataSetChanged();
+                                    //PecsImages item = ops.getItem(id);
+                                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOne";
+                                    String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+                                    String url = BASE_URL;
+
+                                    HashMap<String, String> headers  = new HashMap<>();
+                                    HashMap<String, String> body  = new HashMap<>();
+
+                                    body.put("id", userId.toString());
+
+                                    String contentType =  "application/json";
+                                    VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                                    request.serviceJsonCall(new VolleyCallBack(){
+                                        @Override
+                                        public void onSuccess(String result){
+                                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                                            JSONArray jsonarray = null;
+                                            try {
+                                                jsonarray = new JSONArray(result);
+
+                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
+                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                                                    String word = jsonobject.getString("word");
+                                                    String category = jsonobject.getString("category");
+                                                    int id = jsonobject.getInt("id");
+                                                    String username = jsonobject.getString("username");
+                                                    int number = jsonobject.getInt("number");
+                                                    byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
+                                                    PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                                                    imageCategories.add(pecsImages);
+                                                    imageAdapter.notifyDataSetChanged();
+                                                }
+                                                Toast.makeText(MainScreen.this, "Update Success ", Toast.LENGTH_LONG).show();
+                                            }catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        @Override
+                                        public void onError(ErrorResponse errorResponse){
+                                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                                        }
+                                    });
+                                    break;
+                                }
                             }
                         }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Updated successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
                 }
@@ -464,23 +640,43 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    ops.deleteData(idPecs);
-                    Iterator<PecsImages> iterator = imageCategories.iterator();
-                    while (iterator.hasNext()) {
-                        if(iterator.next().getId() == idPecs) {
-                            iterator.remove();
-                            imageAdapter.notifyDataSetChanged();
-                            break;
-                        }
-                    }
-                    Toast.makeText(getApplicationContext(), "Deleted successfully!!!", Toast.LENGTH_SHORT).show();
+                    Integer deleteId = idPecs;
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteData";
+                    String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+                    String url = BASE_URL;
 
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("id", deleteId.toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.DELETE, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+                            Toast.makeText(MainScreen.this, "Success ", Toast.LENGTH_LONG).show();
+                            Iterator<PecsImages> iterator = imageCategories.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getId() == idPecs) {
+                                    iterator.remove();
+                                    imageAdapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
                 }
             }
         });
-
         dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

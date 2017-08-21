@@ -1,6 +1,5 @@
 package com.example.gareth.speakitvisualcommunication;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,33 +8,34 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.example.gareth.speakitvisualcommunication.volley.ErrorResponse;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyCallBack;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyHelp;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyRequest;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 public class CreateUser extends AppCompatActivity {
 
@@ -126,25 +126,66 @@ public class CreateUser extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = ops.getUserName(edtName.getText().toString());
+                final String username = ops.getUserName(edtName.getText().toString());
+
                 if (edtName.getText().toString().equals("")) {
                     Toast.makeText(CreateUser.this, "Please enter a UserName", Toast.LENGTH_SHORT).show();
-                } else if (username != null) {
-                    Toast.makeText(CreateUser.this, "UserName Already Exists", Toast.LENGTH_SHORT).show();
                 } else {
-                    try{
-                        ops.insertUser(
-                                edtName.getText().toString().trim(),
-                                imageViewToByte(imageView), login
-                        );
-                        Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(CreateUser.this, UserSelect.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsername";
+                    String BASE_URL = "http://10.0.2.2:5000/project/getUsername";
+                    String url = BASE_URL;
+
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("username", edtName.getText().toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(CreateUser.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+                            if(result != null) {
+                                String BASE_URL = "http://10.0.2.2:5000/project/insertUser";
+                                String url = BASE_URL;
+
+                                HashMap<String, String> headers  = new HashMap<>();
+                                HashMap<String, String> body  = new HashMap<>();
+
+                                body.put("username", edtName.getText().toString());
+                                Bitmap bitmap = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+                                body.put("image", BitMapToString(bitmap));
+                                body.put("accountusername", login);
+
+                                String contentType =  "application/json";
+                                VolleyRequest request =   new VolleyRequest(CreateUser.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                                request.serviceJsonCall(new VolleyCallBack(){
+                                    @Override
+                                    public void onSuccess(String result){
+                                        System.out.print("CALLBACK SUCCESS: " + result);
+                                        Toast.makeText(CreateUser.this, "Success ", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(CreateUser.this, UserSelect.class);
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        startActivity(intent);
+                                    }
+                                    @Override
+                                    public void onError(ErrorResponse errorResponse){
+                                        System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(CreateUser.this, "UserName "+result+ " already exists", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+
+                        }
+                    });
                 }
             }
         });
@@ -349,6 +390,19 @@ public class CreateUser extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     *
+     * @param bitmap
+     * @return
+     */
+    public String BitMapToString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp= Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
     /**

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteAbortException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +98,7 @@ public class DatabaseOperations {
 
 
     /**
-     * Gets a specific PecsImage object from the database
+     * Gets a specific PecsImages object from the database
      * @param id - the id of the object
      * @return a PecsImages object
      */

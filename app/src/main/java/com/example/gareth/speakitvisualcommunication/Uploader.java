@@ -1,6 +1,5 @@
 package com.example.gareth.speakitvisualcommunication;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,39 +7,28 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class Uploader extends AppCompatActivity {
 
@@ -91,6 +79,8 @@ public class Uploader extends AppCompatActivity {
      *
      */
     private String user;
+
+    ServerMain serverMain = new ServerMain();
 
     //private static final int ACTION_TAKE_PHOTO_B = 1;
 
@@ -165,11 +155,12 @@ public class Uploader extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     try{
-                        ops.insertData(
-                                edtName.getText().toString().trim(),
-                                imageViewToByte(imageView), categorySelected, user
-                        );
-                        Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
+//                        ops.insertData(
+//                                edtName.getText().toString().trim(),
+//                                imageViewToByte(imageView), categorySelected, user
+//                        );
+                        serverMain.addImageWord(Uploader.this,edtName.getText().toString(), categorySelected, user, "2",((BitmapDrawable)imageView.getDrawable()).getBitmap());
+                        //Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
                         if (!categorySelected.equals("Home Page")) {
                             Intent intent = new Intent(Uploader.this, SecondScreen.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

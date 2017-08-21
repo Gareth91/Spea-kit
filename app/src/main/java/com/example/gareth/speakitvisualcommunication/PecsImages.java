@@ -7,6 +7,8 @@ import java.io.Serializable;
  * Class is used to create objects which will be used to communicate.
  */
 
+
+
 public class PecsImages implements Serializable {
 
     /**
@@ -90,6 +92,22 @@ public class PecsImages implements Serializable {
      * @param number - Number to indicate whether it is a drawable or from database
      */
     public PecsImages(String word, byte[] images, int id, String category, String userName, int number) {
+        this.word = word;
+        this.images = images;
+        this.id = id;
+        this.category = category;
+        this.userName = userName;
+        this.number = number;
+    }
+
+    /**
+     *
+     * @param word
+     * @param images
+     * @param id
+     * @param userName
+     */
+    public PecsImages(String word, byte[] images, int id, String userName) {
         this.word = word;
         this.images = images;
         this.id = id;
@@ -203,6 +221,8 @@ public class PecsImages implements Serializable {
     public String getUserName() {
         return userName;
     }
+
+
 }
 
 

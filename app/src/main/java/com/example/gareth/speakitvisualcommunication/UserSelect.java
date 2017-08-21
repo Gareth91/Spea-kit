@@ -1,6 +1,5 @@
 package com.example.gareth.speakitvisualcommunication;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -10,23 +9,32 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gareth.speakitvisualcommunication.volley.ErrorResponse;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyCallBack;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyHelp;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,8 +43,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import static android.R.attr.id;
 
 public class UserSelect extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
@@ -105,11 +116,51 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         ops.open();
 
         List<User> list = new ArrayList<>();
-        list = ops.getUsers(logName);
-        userList.addAll(list);
+        //list = ops.getUsers(logName);
+        //userList.addAll(list);
         gridView = (GridView)findViewById(R.id.userlistView);
         userAdapter = new UserAdapter(this, userList);
         gridView.setAdapter(userAdapter);
+
+        //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsers";
+        String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+        String url = BASE_URL;
+
+        HashMap<String, String> headers  = new HashMap<>();
+        HashMap<String, String> body  = new HashMap<>();
+
+        body.put("accountusername", logName);
+
+        String contentType =  "application/json";
+        VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+        request.serviceJsonCall(new VolleyCallBack(){
+            @Override
+            public void onSuccess(String result){
+                System.out.print("CALLBACK SUCCESS: " + result);
+
+                JSONArray jsonarray = null;
+                try {
+                    jsonarray = new JSONArray(result);
+
+                    for (int loop = 0; loop < jsonarray.length(); loop++) {
+                        JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                        String username = jsonobject.getString("username");
+                        byte [] image= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
+                        User users = new User(username, image);
+                        userList.add(users);
+                    }
+                    userAdapter.notifyDataSetChanged();
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(ErrorResponse errorResponse){
+                System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+            }
+        });
 
         gridView.setOnItemClickListener(this);
         gridView.setOnItemLongClickListener(this);
@@ -181,18 +232,58 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
     private void showDialogUpdate(Activity activity, final String userName) {
 
         final Dialog dialog = new Dialog(activity);
-        dialog.setContentView(R.layout.update_pecs_images);
+        dialog.setContentView(R.layout.update_user);
         dialog.setTitle("Update");
 
-        imageView = (ImageView) dialog.findViewById(R.id.pecsImage);
-        final EditText edtName = (EditText) dialog.findViewById(R.id.pecsName);
-        Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
-        ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose);
+        imageView = (ImageView) dialog.findViewById(R.id.userImage);
+        final TextView edtName = (TextView) dialog.findViewById(R.id.userName);
+        Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate2);
+        ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose2);
 
-        User updateUser = ops.getUser(userName, logName);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(updateUser.getImage(), 0, updateUser.getImage().length);
-        imageView.setImageBitmap(bitmap);
-        edtName.setText(updateUser.getUserName());
+
+        //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
+        String BASE_URL = "http://10.0.22:5000/project/getOneUser";
+        String url = BASE_URL;
+
+        HashMap<String, String> headers  = new HashMap<>();
+        HashMap<String, String> body  = new HashMap<>();
+
+        body.put("username", userName);
+
+        String contentType =  "application/json";
+        VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+        request.serviceJsonCall(new VolleyCallBack(){
+            @Override
+            public void onSuccess(String result){
+                System.out.print("CALLBACK SUCCESS: " + result);
+
+                JSONArray jsonarray = null;
+                try {
+                    jsonarray = new JSONArray(result);
+                    for (int loop = 0; loop < jsonarray.length(); loop++) {
+                        JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                        String username = jsonobject.getString("username");
+                        byte [] image= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
+                        User users = new User(username, image);
+                        edtName.setText(users.getUserName());
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(users.getImage(), 0, users.getImage().length);
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(ErrorResponse errorResponse){
+                System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+            }
+        });
+
+//        User updateUser = ops.getUser(userName, logName);
+//        Bitmap bitmap = BitmapFactory.decodeByteArray(updateUser.getImage(), 0, updateUser.getImage().length);
+//        imageView.setImageBitmap(bitmap);
+//        edtName.setText(updateUser.getUserName());
 
         // set width for dialog
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
@@ -213,23 +304,84 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 try {
-                    ops.updateUser(
-                            edtName.getText().toString().trim(),
-                            UserSelect.imageViewToByte(imageView), logName
-                    );
-                    Iterator<User> iterator = userList.iterator();
-                    while (iterator.hasNext()) {
-                        if(iterator.next().getUserName() == userName) {
-                            iterator.remove();
-                            userAdapter.notifyDataSetChanged();
-                            User user = ops.getUser(userName, logName);
-                            userList.add(user);
-                            userAdapter.notifyDataSetChanged();
-                            break;
+//                    ops.updateUser(
+//                            edtName.getText().toString().trim(),
+//                            UserSelect.imageViewToByte(imageView), logName
+//                    );
+                    final Integer userId = id;
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateUser";
+                    String BASE_URL = "http://10.0.2.2:5000/project/updateUser";
+                    String url = BASE_URL;
+
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("username", edtName.getText().toString());
+                    body.put("image", ((BitmapDrawable)imageView.getDrawable()).getBitmap().toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.PUT, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                            Iterator<User> iterator = userList.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getUserName() == userName) {
+                                    iterator.remove();
+                                    userAdapter.notifyDataSetChanged();
+                                    //PecsImages item = ops.getItem(id);
+                                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
+                                    String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
+                                    String url = BASE_URL;
+
+                                    HashMap<String, String> headers  = new HashMap<>();
+                                    HashMap<String, String> body  = new HashMap<>();
+
+                                    body.put("username", userName);
+
+                                    String contentType =  "application/json";
+                                    VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                                    request.serviceJsonCall(new VolleyCallBack(){
+                                        @Override
+                                        public void onSuccess(String result){
+                                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                                            JSONArray jsonarray = null;
+                                            try {
+                                                jsonarray = new JSONArray(result);
+
+                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
+                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                                                    String username = jsonobject.getString("username");
+                                                    byte [] image= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
+                                                    User user = new User(username, image);
+                                                    userList.add(user);
+                                                }
+                                                userAdapter.notifyDataSetChanged();
+                                                Toast.makeText(UserSelect.this, "Update Success ", Toast.LENGTH_LONG).show();
+                                            }catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        @Override
+                                        public void onError(ErrorResponse errorResponse){
+                                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                                        }
+                                    });
+                                    break;
+                                }
+                            }
                         }
-                    }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Updated successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
                 }
@@ -409,22 +561,42 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         final AlertDialog.Builder dialogDelete = new AlertDialog.Builder(UserSelect.this);
 
         dialogDelete.setTitle("Warning!!");
-        dialogDelete.setMessage("Are you sure you want this to delete?");
+        dialogDelete.setMessage("Are you sure you want to delete?");
         dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    ops.deleteUser(userName);
-                    Iterator<User> iterator = userList.iterator();
-                    while (iterator.hasNext()) {
-                        if(iterator.next().getUserName() == userName) {
-                            iterator.remove();
-                            userAdapter.notifyDataSetChanged();
-                            break;
-                        }
-                    }
-                    Toast.makeText(getApplicationContext(), "Deleted successfully!!!", Toast.LENGTH_SHORT).show();
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/delete`user";
+                    String BASE_URL = "http://10.0.2.2:5000/project/deleteUser";
+                    String url = BASE_URL;
 
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("username", userName);
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.DELETE, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+                            Toast.makeText(UserSelect.this, "Success ", Toast.LENGTH_LONG).show();
+                            Iterator<User> iterator = userList.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getUserName() == userName) {
+                                    iterator.remove();
+                                    userAdapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
                 }
@@ -464,14 +636,6 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
     public void onResume() {
         super.onResume();
         //Open database
-        ops.open();
-        userList.clear();
-        userAdapter.notifyDataSetChanged();
-        List<User> list = ops.getUsers(logName);
-        userList.clear();
-        userList.addAll(list);
-        userAdapter.notifyDataSetChanged();
-
 
     }
 

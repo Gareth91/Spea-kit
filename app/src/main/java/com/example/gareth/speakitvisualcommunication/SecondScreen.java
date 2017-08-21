@@ -5,19 +5,18 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.PersistableBundle;
+import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,9 +30,18 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.gareth.speakitvisualcommunication.volley.ErrorResponse;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyCallBack;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyHelp;
+import com.example.gareth.speakitvisualcommunication.volley.VolleyRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -94,6 +102,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     private ImageAdapter imageAdapter;
 
+    private ServerMain serverMain = new ServerMain();
+
 
 
     @Override
@@ -109,28 +119,25 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
-
-
         //
-        sentenceWords = new ArrayList<>();
+        Intent intent = getIntent();
+        category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
+        Intent intent2 = getIntent();
+        user = intent2.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
+
+
 
         //
         imageWords = new ArrayList<>();
         imageWords.clear();
         PecsImages image = new PecsImages(getString(R.string.Action_Words),R.drawable.actionwords,1);
         PecsImages addImage = new PecsImages((getString(R.string.Add_Word)), R.drawable.addcategory,1);
-        imageWords.add(addImage);
         imageWords.add(image);
-
+        if (!category.equals("Favourites")) {
+            imageWords.add(addImage);
+        }
 
         //
-        Intent intent = getIntent();
-        category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
-        Intent intent2 = getIntent();
-        user = intent2.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
-        if (user != null) {
-            list = ops.getData(category, user);
-        }
         switch (category){
             case "Favourites":
                 break;
@@ -221,17 +228,115 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
 
         }
         //
-        imageWords.addAll(list);
-
-        //
         final GridView gridView = (GridView)findViewById(R.id.gridviewSecond);
         imageAdapter = new ImageAdapter(this, imageWords);
         gridView.setAdapter(imageAdapter);
         gridView.setOnItemClickListener(this);
 
         //
+        if (user != null) {
+            if (category.equals("Favourites")) {
+                //list = ops.getData(category, user);
+                //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getFavourite";
+                String BASE_URL = "http://10.0.2.2:5000/project/getFavourite";
+                String url = BASE_URL;
+
+                HashMap<String, String> headers  = new HashMap<>();
+                HashMap<String, String> body  = new HashMap<>();
+
+                body.put("username", user);
+
+                String contentType =  "application/json";
+                VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                request.serviceJsonCall(new VolleyCallBack(){
+                    @Override
+                    public void onSuccess(String result){
+                        System.out.print("CALLBACK SUCCESS: " + result);
+                        Toast.makeText(SecondScreen.this, "Success ", Toast.LENGTH_LONG).show();
+
+                        JSONArray jsonarray = null;
+                        try {
+                            jsonarray = new JSONArray(result);
+
+                            for (int loop = 0; loop < jsonarray.length(); loop++) {
+                                JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                                String word = jsonobject.getString("word");
+                                int id = jsonobject.getInt("id");
+                                String username = jsonobject.getString("username");
+                                byte [] images= Base64.decode(jsonobject.getString("image"),Base64.DEFAULT);
+                                PecsImages pecsImages = new PecsImages(word, images, id, username);
+                                list.add(pecsImages);
+                                imageWords.addAll(list);
+                                imageAdapter.notifyDataSetChanged();
+                            }
+                        }catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ErrorResponse errorResponse){
+                        System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                    }
+                });
+            } else {
+                //list = ops.getData(category, user);
+                //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/insertImage";
+                String BASE_URL = "http://10.0.2.2:5000/project/return";
+                String url = BASE_URL;
+
+                HashMap<String, String> headers  = new HashMap<>();
+                HashMap<String, String> body  = new HashMap<>();
+
+                body.put("category", category);
+                body.put("username", user);
+//                body.put("category", "HELP");
+//                body.put("username", "Ashley");
+
+                String contentType =  "application/json";
+                VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                request.serviceJsonCall(new VolleyCallBack(){
+                    @Override
+                    public void onSuccess(String result){
+                        System.out.print("CALLBACK SUCCESS: " + result);
+                        Toast.makeText(SecondScreen.this, "Success ", Toast.LENGTH_LONG).show();
+
+                        JSONArray jsonarray = null;
+                        try {
+                            jsonarray = new JSONArray(result);
+
+                            for (int loop = 0; loop < jsonarray.length(); loop++) {
+                                JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                                String word = jsonobject.getString("word");
+                                String category = jsonobject.getString("category");
+                                int id = jsonobject.getInt("id");
+                                String username = jsonobject.getString("username");
+                                int number = jsonobject.getInt("number");
+                                byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
+                                PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                                imageWords.add(pecsImages);
+                            }
+                            imageAdapter.notifyDataSetChanged();
+                        }catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ErrorResponse errorResponse){
+                        System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                    }
+                });
+            }
+        }
+
+        //
         gridView.setOnItemLongClickListener(this);
 
+        //
+        sentenceWords = new ArrayList<>();
         //
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView2);
         mAdapter = new SentenceBuilderAdapter(sentenceWords);
@@ -244,7 +349,6 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         cancelButton.setOnLongClickListener(this);
         //ImageButton playButton = (ImageButton) findViewById(R.id.speakB2);
         //playButton.setOnClickListener(this);
-
 
 
         //check for TTS data
@@ -320,24 +424,70 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         switch (adapterView.getId()) {
             case R.id.gridviewSecond:
                 final PecsImages image = imageWords.get(position);
-                if (image.getNumber() != 1) {
-                    CharSequence[] items = {"Update", "Delete"};
+                if (image.getNumber() != 1 && !category.equals("Favourites")) {
+                    CharSequence[] items = {"Update", "Delete", "Add to Favourites"};
                     AlertDialog.Builder dialog = new AlertDialog.Builder(SecondScreen.this);
 
                     dialog.setTitle("Choose an action");
                     dialog.setItems(items, new DialogInterface.OnClickListener() {
 
                         /**
-                         *
                          * @param dialog
                          * @param item
                          */
-                        @Override public void onClick(DialogInterface dialog, int item) {
+                        @Override
+                        public void onClick(DialogInterface dialog, int item) {
                             if (item == 0) {
                                 // show dialog update at here
                                 showDialogUpdate(SecondScreen.this, image.getId());
-                            } else {
+                            } else if (item == 1) {
                                 showDialogDelete(image.getId());
+                            } else if (item == 2) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(image.getImages(), 0, image.getImages().length, options);
+                                addToFavourites(bitmap, image.getWord());
+                            }
+                        }
+                    });
+                    dialog.show();
+                    status = true;
+                } else if (category.equals("Favourites") && !image.getWord().equals("Action Words")) {
+                    CharSequence[] items = {"Delete"};
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(SecondScreen.this);
+
+                    dialog.setTitle("Choose an action");
+                    dialog.setItems(items, new DialogInterface.OnClickListener() {
+
+                        /**
+                         * @param dialog
+                         * @param item
+                         */
+                        @Override
+                        public void onClick(DialogInterface dialog, int item) {
+                            if (item == 0) {
+                                showDialogDeleteFavourite(image.getId());
+                            }
+                        }
+                    });
+                    dialog.show();
+                    status = true;
+                } else if (image.getNumber() == 1 && !category.equals("Favourites") && !image.getWord().equals("Action Words") || image.getNumber() == 1 && !category.equals("Favourites") && !image.getWord().equals("Add Word")) {
+                    CharSequence[] items = {"Add to Favourites"};
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(SecondScreen.this);
+
+                    dialog.setTitle("Choose an action");
+                    dialog.setItems(items, new DialogInterface.OnClickListener() {
+
+                        /**
+                         * @param dialog
+                         * @param item
+                         */
+                        @Override
+                        public void onClick(DialogInterface dialog, int item) {
+                            if (item == 0) {
+                                BitmapFactory.Options options = new BitmapFactory.Options();
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(image.getImages(), 0, image.getImages().length, options);
+                                addToFavourites(bitmap, image.getWord());
                             }
                         }
                     });
@@ -535,24 +685,92 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(View v) {
                 try {
-                    ops.updateData(
-                            edtName.getText().toString().trim(),
-                            Uploader.imageViewToByte(pecsView), category,
-                            id
-                    );
-                    Iterator<PecsImages> iterator = imageWords.iterator();
-                    while (iterator.hasNext()) {
-                        if(iterator.next().getId() == id) {
-                            iterator.remove();
-                            imageAdapter.notifyDataSetChanged();
-                            PecsImages item = ops.getItem(id);
-                            imageWords.add(item);
-                            imageAdapter.notifyDataSetChanged();
-                            break;
+//                    ops.updateData(
+//                            edtName.getText().toString().trim(),
+//                            Uploader.imageViewToByte(pecsView), category,
+//                            id
+//                    );
+                    final Integer userId = id;
+                    //serverMain.updateImageWord(SecondScreen.this, userId.toString(), edtName.getText().toString(), category, ((BitmapDrawable)pecsView.getDrawable()).getBitmap());
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateData";
+                    String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+                    String url = BASE_URL;
+
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("id", userId.toString());
+                    body.put("word", edtName.getText().toString());
+                    body.put("category", category);
+                    body.put("image", ((BitmapDrawable)pecsView.getDrawable()).getBitmap().toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.PUT, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                            Iterator<PecsImages> iterator = imageWords.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getId() == id) {
+                                    iterator.remove();
+                                    imageAdapter.notifyDataSetChanged();
+                                    //PecsImages item = ops.getItem(id);
+                                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOne";
+                                    String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+                                    String url = BASE_URL;
+
+                                    HashMap<String, String> headers  = new HashMap<>();
+                                    HashMap<String, String> body  = new HashMap<>();
+
+                                    body.put("id", userId.toString());
+
+                                    String contentType =  "application/json";
+                                    VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                                    request.serviceJsonCall(new VolleyCallBack(){
+                                        @Override
+                                        public void onSuccess(String result){
+                                            System.out.print("CALLBACK SUCCESS: " + result);
+
+                                            JSONArray jsonarray = null;
+                                            try {
+                                                jsonarray = new JSONArray(result);
+
+                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
+                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
+                                                    String word = jsonobject.getString("word");
+                                                    String category = jsonobject.getString("category");
+                                                    int id = jsonobject.getInt("id");
+                                                    String username = jsonobject.getString("username");
+                                                    int number = jsonobject.getInt("number");
+                                                    byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
+                                                    PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                                                    imageWords.add(pecsImages);
+                                                    imageAdapter.notifyDataSetChanged();
+                                                }
+                                                Toast.makeText(SecondScreen.this, "Update Success ", Toast.LENGTH_LONG).show();
+                                            }catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        @Override
+                                        public void onError(ErrorResponse errorResponse){
+                                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                                        }
+                                    });
+                                    break;
+                                }
+                            }
                         }
-                    }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                     dialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Update successfully!!!", Toast.LENGTH_SHORT).show();
                 } catch (Exception error) {
                     Log.e("Update error", error.getMessage());
                 }
@@ -580,17 +798,134 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    ops.deleteData(idPecs);
-                    Iterator<PecsImages> iterator = imageWords.iterator();
-                    while (iterator.hasNext()) {
-                        if(iterator.next().getId() == idPecs) {
-                            iterator.remove();
-                            imageAdapter.notifyDataSetChanged();
-                            break;
-                        }
-                    }
-                    Toast.makeText(getApplicationContext(), "Delete successfully!!!", Toast.LENGTH_SHORT).show();
+                    //ops.deleteData(idPecs);
+                    Integer deleteId = idPecs;
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteData";
+                    String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+                    String url = BASE_URL;
 
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("id", deleteId.toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.DELETE, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+                            Toast.makeText(SecondScreen.this, "Success ", Toast.LENGTH_LONG).show();
+                            Iterator<PecsImages> iterator = imageWords.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getId() == idPecs) {
+                                    iterator.remove();
+                                    imageAdapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
+                } catch (Exception e) {
+                    Log.e("error", e.getMessage());
+                }
+            }
+        });
+
+        dialogDelete.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialogDelete.show();
+    }
+
+    /**
+     *
+     * @param image
+     */
+    public void addToFavourites(Bitmap image, String word) {
+        //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/addFavourite";
+        String BASE_URL = "http://10.0.2.2:5000/project/addFavourite";
+        String url = BASE_URL;
+
+        HashMap<String, String> headers  = new HashMap<>();
+        HashMap<String, String> body  = new HashMap<>();
+
+        body.put("id", null);
+        body.put("word", word);
+        body.put("username", user);
+        body.put("image", image.toString());
+
+        String contentType =  "application/json";
+        VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+        request.serviceJsonCall(new VolleyCallBack(){
+            @Override
+            public void onSuccess(String result){
+                System.out.print("CALLBACK SUCCESS: " + result);
+                Toast.makeText(SecondScreen.this, "Added Successfully ", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onError(ErrorResponse errorResponse){
+                System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+            }
+        });
+    }
+
+    /**
+     *
+     * @param idPecs
+     */
+    private void showDialogDeleteFavourite(final int idPecs) {
+        final AlertDialog.Builder dialogDelete = new AlertDialog.Builder(SecondScreen.this);
+
+        dialogDelete.setTitle("Warning!!");
+        dialogDelete.setMessage("Are you sure you want to delete?");
+        dialogDelete.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    //ops.deleteData(idPecs);
+                    Integer deleteId = idPecs;
+                    //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteFavourite";
+                    String BASE_URL = "http://10.0.2.2:5000/project/deleteFavourite";
+                    String url = BASE_URL;
+
+                    HashMap<String, String> headers  = new HashMap<>();
+                    HashMap<String, String> body  = new HashMap<>();
+
+                    body.put("id", deleteId.toString());
+
+                    String contentType =  "application/json";
+                    VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                    request.serviceJsonCall(new VolleyCallBack(){
+                        @Override
+                        public void onSuccess(String result){
+                            System.out.print("CALLBACK SUCCESS: " + result);
+                            Toast.makeText(SecondScreen.this, "Success ", Toast.LENGTH_LONG).show();
+                            Iterator<PecsImages> iterator = imageWords.iterator();
+                            while (iterator.hasNext()) {
+                                if(iterator.next().getId() == idPecs) {
+                                    iterator.remove();
+                                    imageAdapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        }
+                        @Override
+                        public void onError(ErrorResponse errorResponse){
+                            System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                        }
+                    });
                 } catch (Exception e) {
                     Log.e("error", e.getMessage());
                 }
@@ -632,7 +967,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         super.onResume();
         //Open database
         ops.open();
-        updatePecsList();
+
         //
         sentenceWords.clear();
         List<PecsImages> list = new ArrayList<>();
