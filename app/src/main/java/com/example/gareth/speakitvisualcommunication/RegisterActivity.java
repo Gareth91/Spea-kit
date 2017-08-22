@@ -88,7 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onSuccess(String result){
                         System.out.print("CALLBACK SUCCESS: " + result);
                         if(!result.equals(userName)) {
-                            String BASE_URL = "http://10.0.2.2:5000/project/addAccountUsername";
+                            String BASE_URL = "http://10.0.2.2:5000/project/addAccountUser";
                             String url = BASE_URL;
 
                             HashMap<String, String> headers  = new HashMap<>();

@@ -1,10 +1,8 @@
 package com.example.gareth.speakitvisualcommunication;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 /**
@@ -16,7 +14,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     /**
      * Database Version
      */
-    private static final int Database_Version = 11;
+    private static final int Database_Version = 12;
 
     /**
      * Database name
@@ -63,13 +61,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
      */
     public static final String userName = "user_name";
 
-
+    /**
+     *
+     */
     public static final String logName = "log_name";
 
     /**
      *
      */
     public static final String User_Table = "user_table";
+
 
     /**
      *
@@ -84,11 +85,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String Create_Table2 = "create table "+ Sentence_Table +" ("+ Column_Id +" integer primary key autoincrement, "
             +word+" text not null, "+image+" blob not null, "+number+" integer not null)";
 
+//    /**
+//     *
+//     */
+//    private static final String Create_Table3 = "create table "+ User_Table +" ("+ userName +" text primary key, "
+//            +image+" blob not null, "+logName+" text not null)";
+
     /**
      *
      */
-    private static final String Create_Table3 = "create table "+ User_Table +" ("+ userName +" text primary key, "
-            +image+" blob not null, "+logName+" text not null)";
+    private static final String Create_Table3 = "create table "+ User_Table +" ("+ Column_Id+" integer primary key autoincrement, "+logName +" text)";
 
 
 

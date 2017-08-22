@@ -54,6 +54,7 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
 
         Login.setOnClickListener(this);
         Register.setOnClickListener(this);
+        Forgot.setOnClickListener(this);
 
     }
 
@@ -98,8 +99,8 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                             if (Username.getText().toString().equals(dbUsername) && Password.getText().toString().equals(dbPassword) ) {
 
                                 Toast.makeText(LoginScreen.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                DataHolder.getInstance().setLogin(dbUsername);
                                 Intent intent = new Intent(LoginScreen.this, UserSelect.class);
-                                intent.putExtra("com.example.gareth.speakitvisualcommunication.Login", dbUsername);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                             } else {

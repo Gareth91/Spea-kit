@@ -144,18 +144,32 @@ public class DatabaseOperations {
 
     }
 
+//    /**
+//     *
+//     * @param username - The word to be entered
+//     * @param images - the image to be entered
+//     */
+//    public void insertUser(String username, byte[] images, String logName) {
+//
+//        ContentValues values = new ContentValues();
+//
+//        //Add the booking date, company name, category and customer id to booking table
+//        values.put(SQLiteHelper.userName, username);
+//        values.put(SQLiteHelper.image, images);
+//        values.put(SQLiteHelper.logName, logName);
+//
+//        database.insert(SQLiteHelper.User_Table, null, values);
+//
+//    }
+
     /**
      *
-     * @param username - The word to be entered
-     * @param images - the image to be entered
+     * @param logName
      */
-    public void insertUser(String username, byte[] images, String logName) {
+    public void insertUser(String logName) {
 
         ContentValues values = new ContentValues();
 
-        //Add the booking date, company name, category and customer id to booking table
-        values.put(SQLiteHelper.userName, username);
-        values.put(SQLiteHelper.image, images);
         values.put(SQLiteHelper.logName, logName);
 
         database.insert(SQLiteHelper.User_Table, null, values);
@@ -169,7 +183,7 @@ public class DatabaseOperations {
     public List<User> getUsers(String logName) {
         // get all data from sqlite
         List<User> userList = new ArrayList<>();
-        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table+" where "+SQLiteHelper.logName+" = ?", new String[]{logName});
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table+" where "+ logName+" = ?", new String[]{logName});
         //if there are images present
         if(cursor.getCount() > 0) {
             //Move to the first row
@@ -204,26 +218,46 @@ public class DatabaseOperations {
         return userName;
     }
 
+//    /**
+//     *
+//     * @param user
+//     * @return
+//     */
+//    public User getUser(String user, String logName) {
+//        // get all data from sqlite
+//        User person = null;
+//        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table +" where "+SQLiteHelper.userName+ " = ? And "+SQLiteHelper.logName+" = ?", new String[]{user, logName});
+//        //if there are images present
+//        if(cursor.getCount() > 0) {
+//            //Move to the first row
+//            cursor.moveToFirst();
+//            do {
+//                String name = cursor.getString(0);
+//                byte[] image = cursor.getBlob(1);
+//                person = new User(name, image);
+//            } while (cursor.moveToNext());
+//        }
+//        return person;
+//    }
+
     /**
      *
-     * @param user
      * @return
      */
-    public User getUser(String user, String logName) {
+    public String getUser() {
         // get all data from sqlite
         User person = null;
-        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table +" where "+SQLiteHelper.userName+ " = ? And "+SQLiteHelper.logName+" = ?", new String[]{user, logName});
+        String login = null;
+        Cursor cursor = database.rawQuery("Select * from "+SQLiteHelper.User_Table,null);
         //if there are images present
         if(cursor.getCount() > 0) {
             //Move to the first row
             cursor.moveToFirst();
-            do {
-                String name = cursor.getString(0);
-                byte[] image = cursor.getBlob(1);
-                person = new User(name, image);
-            } while (cursor.moveToNext());
+            String name = cursor.getString(1);
+            person = new User(name);
+            login = person.getLoginName();
         }
-        return person;
+        return login;
     }
 
 
@@ -279,7 +313,7 @@ public class DatabaseOperations {
         //Add the booking date, company name and customer id to booking table
         values.put(SQLiteHelper.userName, name);
         values.put(SQLiteHelper.image, images);
-        values.put(SQLiteHelper.logName, logName);
+        values.put(logName, logName);
 
         database.update(SQLiteHelper.User_Table, values, SQLiteHelper.userName+" = ?", new String[]{name});
 
@@ -308,11 +342,11 @@ public class DatabaseOperations {
 
 
     /**
-     * Deletes objects from the table associated with the GridView
+     * Deletes objects from the table
      */
-    public void deleteUser(String username) {
+    public void deleteUser(String loginName) {
 
-        database.delete(SQLiteHelper.User_Table, SQLiteHelper.userName+" = ?",new String[]{username});
+        database.delete(SQLiteHelper.User_Table, SQLiteHelper.logName+" = ?",new String[]{loginName});
 
     }
 

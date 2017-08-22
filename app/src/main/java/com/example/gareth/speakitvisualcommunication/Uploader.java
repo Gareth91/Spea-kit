@@ -30,6 +30,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Created by Gareth
+ */
 public class Uploader extends AppCompatActivity {
 
     /**
@@ -80,6 +83,14 @@ public class Uploader extends AppCompatActivity {
      */
     private String user;
 
+    /**
+     *
+     */
+    private String logName;
+
+    /**
+     *
+     */
     ServerMain serverMain = new ServerMain();
 
     //private static final int ACTION_TAKE_PHOTO_B = 1;
@@ -105,7 +116,7 @@ public class Uploader extends AppCompatActivity {
         Intent intent = getIntent();
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.User");
         categorySelected = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.page");
-
+        logName = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
         if (user == null) {
             Toast.makeText(this, "Please select a User", Toast.LENGTH_SHORT).show();
             finish();
@@ -167,12 +178,14 @@ public class Uploader extends AppCompatActivity {
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", categorySelected);
+                            intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
                             startActivity(intent);
                         } else if (categorySelected.equals("Home Page")){
                             Intent intent = new Intent(Uploader.this, MainScreen.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", categorySelected);
+                            intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
                             startActivity(intent);
                         }
 

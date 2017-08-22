@@ -54,6 +54,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Created by Gareth
+ */
 public class SecondScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, AdapterView.OnItemLongClickListener, View.OnClickListener, View.OnLongClickListener{
 
     //TTS object
@@ -120,7 +123,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
     /**
      *
      */
-    private String logName = null;
+    private String logName;
 
     /**
      *
@@ -153,10 +156,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         //
         Intent intent = getIntent();
         category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
-        Intent intent2 = getIntent();
-        user = intent2.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
-        Intent intent3 = getIntent();
-        logName = intent3.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
+        user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
+        logName = DataHolder.getInstance().getLogin();
 
 
 
@@ -648,7 +649,6 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     startActivity(loginIntent);
                 } else {
                     Intent intent = new Intent(SecondScreen.this, UserSelect.class);
-                    intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
                     startActivity(intent);
                 }
                 return true;

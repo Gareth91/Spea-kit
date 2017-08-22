@@ -49,6 +49,9 @@ import java.util.List;
 
 import static android.R.attr.id;
 
+/**
+ * Created by Gareth
+ */
 public class UserSelect extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     /**
@@ -86,6 +89,9 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
      */
     private UserAdapter userAdapter;
 
+    /**
+     *
+     */
     private ImageView imageView;
 
     /**
@@ -93,7 +99,9 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
      */
     private String userChosen;
 
-
+    /**
+     *
+     */
     String logName = null;
 
     /**
@@ -115,8 +123,7 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
 
-        Intent intent = getIntent();
-        logName = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
+        logName = DataHolder.getInstance().getLogin();
 
 
         List<User> list = new ArrayList<>();
@@ -204,6 +211,7 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         User user = userList.get(position);
         Intent intent = new Intent(this, MainScreen.class);
         intent.putExtra("com.example.gareth.speakitvisualcommunication.username", user.getUserName());
+        intent.putExtra("com.example.gareth.speakitvisualcommunication.Login", logName);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
@@ -665,7 +673,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                finish();
+                Intent intent = new Intent(UserSelect.this, MainScreen.class);
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

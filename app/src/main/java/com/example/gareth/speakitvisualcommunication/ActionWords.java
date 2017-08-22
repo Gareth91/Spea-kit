@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-
+/**
+ * Created by Gareth
+ */
 public class ActionWords extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener {
 
     //TTS object

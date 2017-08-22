@@ -37,6 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 
+/**
+ * Created by Gareth
+ */
 public class CreateUser extends AppCompatActivity {
 
     /**
@@ -87,6 +90,9 @@ public class CreateUser extends AppCompatActivity {
      */
     private String user;
 
+    /**
+     *
+     */
     String login;
 
 
@@ -98,11 +104,10 @@ public class CreateUser extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        final Intent intent = getIntent();
-        login = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.login");
 
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
+        login = DataHolder.getInstance().getLogin();
 
         init();
 
@@ -170,6 +175,7 @@ public class CreateUser extends AppCompatActivity {
                                         Toast.makeText(CreateUser.this, "Success ", Toast.LENGTH_LONG).show();
                                         Intent intent = new Intent(CreateUser.this, UserSelect.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                        intent.putExtra("com.example.gareth.speakitvisualcommunication.Login", login);
                                         startActivity(intent);
                                     }
                                     @Override

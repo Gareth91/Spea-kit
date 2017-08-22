@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
+ * Created by Gareth
  * Class used to create the main screen of the app
  */
 public class MainScreen extends AppCompatActivity implements AdapterView.OnItemClickListener, TextToSpeech.OnInitListener, View.OnClickListener, View.OnLongClickListener{
@@ -186,7 +187,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         Intent intent = getIntent();
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username");
         user2 = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
-        logName = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
+        logName = DataHolder.getInstance().getLogin();
 
         imageCategories = new ArrayList<>(Arrays.asList(categories));
 
@@ -382,13 +383,14 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             Intent intent2  = new Intent(getApplicationContext(), Uploader.class);
             intent2.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
             intent2.putExtra("com.example.gareth.speakitvisualcommunication.page", "Home Page");
+            intent2.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
             startActivity(intent2);
         } else {
             //if any other item is selected it takes you to the second screen.
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
-            intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
+            intent.putExtra("com.example.gareth.speakitvisualcommunication.Login2",logName);
             startActivity(intent);
         }
 
@@ -876,7 +878,6 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                     startActivity(loginIntent);
                 } else {
                     Intent intent = new Intent(MainScreen.this, UserSelect.class);
-                    intent.putExtra("com.example.gareth.speakitvisualcommunication.Login", logName);
                     startActivity(intent);
                 }
 
@@ -915,7 +916,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     @Override
     public void  onStop() {
         super.onStop();
-        ops.close();
+
     }
 
 
@@ -925,6 +926,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     @Override
     public void onDestroy() {
         super.onDestroy();
+
 
         //Calling the close method to close the database.
         ops.close();
