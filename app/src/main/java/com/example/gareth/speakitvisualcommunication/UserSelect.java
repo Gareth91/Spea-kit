@@ -94,7 +94,7 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
     private String userChosen;
 
 
-    String logName = "Gareth";
+    String logName = null;
 
     /**
      *
@@ -114,6 +114,10 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
 
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
+
+        Intent intent = getIntent();
+        logName = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
+
 
         List<User> list = new ArrayList<>();
         //list = ops.getUsers(logName);
@@ -151,6 +155,11 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                         userList.add(users);
                     }
                     userAdapter.notifyDataSetChanged();
+                    if (jsonarray.length() >= 6) {
+                        add.setEnabled(false);
+                    } else {
+                        add.setEnabled(true);
+                    }
                 }catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -589,6 +598,42 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                                     break;
                                 }
                             }
+                            //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsers";
+                            String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+                            String url = BASE_URL;
+
+                            HashMap<String, String> headers  = new HashMap<>();
+                            HashMap<String, String> body  = new HashMap<>();
+
+                            body.put("accountusername", logName);
+
+                            String contentType =  "application/json";
+                            VolleyRequest request =   new VolleyRequest(UserSelect.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+                            request.serviceJsonCall(new VolleyCallBack(){
+                                @Override
+                                public void onSuccess(String result){
+                                    System.out.print("CALLBACK SUCCESS: " + result);
+
+                                    JSONArray jsonarray = null;
+                                    try {
+                                        jsonarray = new JSONArray(result);
+
+                                        if (jsonarray.length() >= 6) {
+                                            add.setEnabled(false);
+                                        } else {
+                                            add.setEnabled(true);
+                                        }
+                                    }catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onError(ErrorResponse errorResponse){
+                                    System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+                                }
+                            });
                         }
                         @Override
                         public void onError(ErrorResponse errorResponse){

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:textAlignment="center"
+    android:background="#ffffff"
+    tools:context="com.example.gareth.speakitvisualcommunication.LoginScreen">
+
+  <ImageView
+      android:layout_width="150dp"
+      android:layout_height="50dp"
+      android:id="@+id/imageView2"
+      android:src="@drawable/logotransparent"
+      android:background="@color/colorPrimary"
+      android:layout_marginTop="47dp"
+      android:layout_alignParentTop="true"
+      android:layout_centerHorizontal="true" />
+
+
+    <Button
+        android:id="@+id/forgotbutton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="127dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Forgot Password?"
+        android:textSize="14sp"
+        android:layout_below="@+id/editText7"
+        android:layout_toEndOf="@+id/button3" />
+
+    <Button
+        android:id="@+id/button3"
+        android:background="@drawable/sentence_builder_border"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LOGIN"
+        android:textSize="20sp"
+        android:layout_marginTop="44dp"
+        android:layout_below="@+id/forgotbutton"
+        android:layout_alignStart="@+id/button4"
+        android:layout_alignEnd="@+id/button4" />
+
+    <EditText
+        android:id="@+id/editText6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:selectAllOnFocus="false"
+        android:hint="Username"
+        android:layout_below="@+id/imageView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="54dp" />
+
+    <EditText
+        android:id="@+id/editText7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:hint="Password"
+        android:layout_below="@+id/editText6"
+        android:layout_alignStart="@+id/editText6"
+        android:layout_marginTop="18dp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:background="@drawable/sentence_builder_border"
+        android:layout_width="110dp"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textSize="20sp"
+        android:layout_marginTop="17dp"
+        android:layout_below="@+id/button3"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

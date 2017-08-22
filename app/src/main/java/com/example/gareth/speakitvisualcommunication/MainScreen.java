@@ -105,6 +105,12 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
     final int REQUEST_IMAGE_CAPTURE = 0;
 
     /**
+     *
+     */
+    private String logName = null;
+
+
+    /**
      * Array containing PecsImages objects which take an image from
      * drawable resource
      */
@@ -116,8 +122,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             new PecsImages("About Me", R.drawable.aboutme,1),
             new PecsImages("Greetings", R.drawable.seeyou,1),
             new PecsImages("Food And Drink", R.drawable.foodanddrink,1),
-            new PecsImages("Leisure", R.drawable.leisure,1),
-            new PecsImages("Today's Activities", R.drawable.schedule,1)
+            new PecsImages("Leisure", R.drawable.leisure,1)
     };
 
     /**
@@ -181,6 +186,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         Intent intent = getIntent();
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username");
         user2 = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
+        logName = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
 
         imageCategories = new ArrayList<>(Arrays.asList(categories));
 
@@ -382,6 +388,7 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", image.getWord());
             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
+            intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
             startActivity(intent);
         }
 
@@ -864,8 +871,15 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         // Take appropriate action for each action item click
         switch (item.getItemId()) {
             case R.id.account:
-                Intent intent = new Intent(MainScreen.this, UserSelect.class);
-                startActivity(intent);
+                if (logName == null) {
+                    Intent loginIntent = new Intent(MainScreen.this, LoginScreen.class);
+                    startActivity(loginIntent);
+                } else {
+                    Intent intent = new Intent(MainScreen.this, UserSelect.class);
+                    intent.putExtra("com.example.gareth.speakitvisualcommunication.Login", logName);
+                    startActivity(intent);
+                }
+
                 return true;
             case R.id.action_play:
                 //The words from the different items in the view are added together and then spoken aloud

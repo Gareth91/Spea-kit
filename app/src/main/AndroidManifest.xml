@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.gareth.speakitvisualcommunication">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature
@@ -26,13 +26,18 @@
         </activity>
         <activity android:name=".SecondScreen" />
         <activity
-
             android:name=".ActionWords"
             android:theme="@style/AppTheme.CustomTheme2" />
         <activity android:name=".Uploader" />
         <activity android:name=".MainScreen" />
         <activity android:name=".CreateUser" />
         <activity android:name=".UserSelect" />
+        <activity android:name=".LoginScreen" />
+        <activity
+            android:name=".ForgotPassword"
+            android:parentActivityName=".LoginScreen"></activity>
+        <activity android:name=".RegisterActivity"
+            android:parentActivityName=".LoginScreen"></activity>
     </application>
 
 </manifest>

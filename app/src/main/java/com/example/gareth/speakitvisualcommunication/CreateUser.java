@@ -126,14 +126,14 @@ public class CreateUser extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String username = ops.getUserName(edtName.getText().toString());
+                //final String username = ops.getUserName(edtName.getText().toString());
 
                 if (edtName.getText().toString().equals("")) {
                     Toast.makeText(CreateUser.this, "Please enter a UserName", Toast.LENGTH_SHORT).show();
                 } else {
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsername";
                     String BASE_URL = "http://10.0.2.2:5000/project/getUsername";
-                    String url = BASE_URL;
+                    final String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
                     HashMap<String, String> body  = new HashMap<>();
@@ -147,7 +147,8 @@ public class CreateUser extends AppCompatActivity {
                         @Override
                         public void onSuccess(String result){
                             System.out.print("CALLBACK SUCCESS: " + result);
-                            if(result != null) {
+                            String user = edtName.getText().toString();
+                            if(!result.equals(user)) {
                                 String BASE_URL = "http://10.0.2.2:5000/project/insertUser";
                                 String url = BASE_URL;
 

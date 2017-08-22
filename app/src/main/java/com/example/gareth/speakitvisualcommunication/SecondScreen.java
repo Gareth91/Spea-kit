@@ -117,6 +117,10 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     final int REQUEST_IMAGE_CAPTURE = 0;
 
+    /**
+     *
+     */
+    private String logName = null;
 
     /**
      *
@@ -151,6 +155,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         category = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.Category");
         Intent intent2 = getIntent();
         user = intent2.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
+        Intent intent3 = getIntent();
+        logName = intent3.getStringExtra("com.example.gareth.speakitvisualcommunication.Login");
 
 
 
@@ -637,8 +643,14 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 finish();
                 return true;
             case R.id.account:
-                Intent intent = new Intent(SecondScreen.this, UserSelect.class);
-                startActivity(intent);
+                if (logName == null) {
+                    Intent loginIntent = new Intent(SecondScreen.this, LoginScreen.class);
+                    startActivity(loginIntent);
+                } else {
+                    Intent intent = new Intent(SecondScreen.this, UserSelect.class);
+                    intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
+                    startActivity(intent);
+                }
                 return true;
             case R.id.action_play:
                 //The words from the different items in the view are added together and then spoken aloud
