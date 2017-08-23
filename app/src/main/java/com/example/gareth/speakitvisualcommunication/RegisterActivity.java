@@ -52,7 +52,8 @@ public class RegisterActivity extends AppCompatActivity {
                 else if (Email.getText().toString().equals("")) {
                     Email.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
                 }
-                else if (Password.getText().toString().equals("")) {
+                else if (Password.getText().toString().length() <= 5) {
+                    Toast.makeText(RegisterActivity.this, "Password should be more than 5 letters long", Toast.LENGTH_SHORT).show();
                     Password.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
                 }
                 else if (!confirmPassword.getText().toString().equals(Password.getText().toString())) {

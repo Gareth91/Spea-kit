@@ -17,6 +17,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -203,11 +205,11 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
      */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-        List<PecsImages> list = new ArrayList<>();
-        list = ops.getSentenceData();
-        for (PecsImages image: list) {
-            ops.deleteSentenceData(image.getId());
-        }
+//        List<PecsImages> list = new ArrayList<>();
+//        list = ops.getSentenceData();
+//        for (PecsImages image: list) {
+//            ops.deleteSentenceData(image.getId());
+//        }
         User user = userList.get(position);
         Intent intent = new Intent(this, MainScreen.class);
         intent.putExtra("com.example.gareth.speakitvisualcommunication.username", user.getUserName());
@@ -676,6 +678,11 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                 Intent intent = new Intent(UserSelect.this, MainScreen.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_logout:
+                DataHolder.getInstance().setLogin(null);
+                Intent intent1 = new Intent(UserSelect.this, MainScreen.class);
+                intent1.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent1);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -692,6 +699,21 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         String temp= Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
+
+
+    /**
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.logout_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
 
 
     /**

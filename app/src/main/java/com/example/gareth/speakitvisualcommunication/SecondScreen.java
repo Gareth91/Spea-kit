@@ -149,6 +149,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+
         //
         ops = new DatabaseOperations(getApplicationContext());
         ops.open();
@@ -159,7 +160,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.username2");
         logName = DataHolder.getInstance().getLogin();
 
-
+        getSupportActionBar().setTitle(category);
 
         //
         imageWords = new ArrayList<>();
