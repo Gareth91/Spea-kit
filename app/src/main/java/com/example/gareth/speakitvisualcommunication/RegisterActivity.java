@@ -72,7 +72,8 @@ public class RegisterActivity extends AppCompatActivity {
                     confirmPassword.getBackground().clearColorFilter();
                 }
                 //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsername";
-                String BASE_URL = "http://10.0.2.2:5000/project/getAccountUsername";
+//                String BASE_URL = "http://10.0.2.2:5000/project/getAccountUsername";
+                String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getAccountUsername";
                 String url = BASE_URL;
 
                 HashMap<String, String> headers  = new HashMap<>();
@@ -89,7 +90,8 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onSuccess(String result){
                         System.out.print("CALLBACK SUCCESS: " + result);
                         if(!result.equals(userName)) {
-                            String BASE_URL = "http://10.0.2.2:5000/project/addAccountUser";
+//                            String BASE_URL = "http://10.0.2.2:5000/project/addAccountUser";
+                            String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/addAccountUser";
                             String url = BASE_URL;
 
                             HashMap<String, String> headers  = new HashMap<>();

@@ -54,6 +54,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.gareth.speakitvisualcommunication.SQLiteHelper.category;
+
 /**
  * Created by Gareth
  * Class used to create the main screen of the app
@@ -200,7 +202,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         // using the ImageAdapter class
         if (user != null && user2 == null) {
             //List<PecsImages> list2 = ops.getData("Home Page", user);
-            String BASE_URL = "http://10.0.2.2:5000/project/return";
+            //String BASE_URL = "http://10.0.2.2:5000/project/return";
+            String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/return";
             String url = BASE_URL;
 
             HashMap<String, String> headers  = new HashMap<>();
@@ -243,7 +246,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 }
             });
         } else if (user == null && user2 != null) {
-            String BASE_URL = "http://10.0.2.2:5000/project/return";
+            //String BASE_URL = "http://10.0.2.2:5000/project/return";
+            String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/return";
             String url = BASE_URL;
 
             HashMap<String, String> headers  = new HashMap<>();
@@ -379,12 +383,21 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         speakWords(image.getWord());
 
         //if the item clicked has the word Add Category it takes you to the upload page
-        if (image.getWord().equals("Add Category")) {
+        if (image.getWord().equals("Add Category") && user != null) {
             Intent intent2  = new Intent(getApplicationContext(), Uploader.class);
             intent2.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
             intent2.putExtra("com.example.gareth.speakitvisualcommunication.page", "Home Page");
             intent2.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
             startActivity(intent2);
+        } else if(image.getWord().equals("Add Category") && user == null) {
+            Toast.makeText(this, "Please select user",Toast.LENGTH_LONG ).show();
+            if (logName == null) {
+                Intent logIntent = new Intent(MainScreen.this, LoginScreen.class);
+                startActivity(logIntent);
+            } else if (logName != null) {
+                Intent userIntent = new Intent(MainScreen.this, UserSelect.class);
+                startActivity(userIntent);
+            }
         } else {
             //if any other item is selected it takes you to the second screen.
             Intent intent = new Intent(getApplicationContext(), SecondScreen.class);
@@ -492,6 +505,48 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
         ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose);
 
+        //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
+        //String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOne";
+        String url = BASE_URL;
+        Integer imageId = id;
+
+        HashMap<String, String> headers  = new HashMap<>();
+        HashMap<String, String> body  = new HashMap<>();
+
+        body.put("id", imageId.toString());
+
+        String contentType =  "application/json";
+        VolleyRequest request =   new VolleyRequest(MainScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+        request.serviceJsonCall(new VolleyCallBack(){
+            @Override
+            public void onSuccess(String result){
+                System.out.print("CALLBACK SUCCESS: " + result);
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    String word = jsonObject.getString("word");
+                    byte [] image= Base64.decode(jsonObject.getString("images"),Base64.DEFAULT);
+                    int id = jsonObject.getInt("id");
+                    int number = jsonObject.getInt("number");
+                    PecsImages pecsImages = new PecsImages(word, image, id, number);
+                    edtName.setText(pecsImages.getWord());
+                    edtName.setTextSize(22);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(pecsImages.getImages(), 0, pecsImages.getImages().length);
+                    pecsView.setImageBitmap(bitmap);
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(ErrorResponse errorResponse){
+                System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+            }
+        });
+
+
         // set width for dialog
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
         // set height for dialog
@@ -518,7 +573,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
 
                     final Integer userId = id;
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateData";
-                    String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+                    //String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/updateData";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
@@ -545,7 +601,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                                     imageAdapter.notifyDataSetChanged();
                                     //PecsImages item = ops.getItem(id);
                                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOne";
-                                    String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+                                    //String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+                                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOne";
                                     String url = BASE_URL;
 
                                     HashMap<String, String> headers  = new HashMap<>();
@@ -561,22 +618,17 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                                         public void onSuccess(String result){
                                             System.out.print("CALLBACK SUCCESS: " + result);
 
-                                            JSONArray jsonarray = null;
+                                            JSONObject jsonObject = null;
                                             try {
-                                                jsonarray = new JSONArray(result);
-
-                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
-                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
-                                                    String word = jsonobject.getString("word");
-                                                    String category = jsonobject.getString("category");
-                                                    int id = jsonobject.getInt("id");
-                                                    String username = jsonobject.getString("username");
-                                                    int number = jsonobject.getInt("number");
-                                                    byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
-                                                    PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
-                                                    imageCategories.add(pecsImages);
-                                                    imageAdapter.notifyDataSetChanged();
-                                                }
+                                                jsonObject = new JSONObject(result);
+                                                String word = jsonObject.getString("word");
+                                                byte [] images = Base64.decode(jsonObject.getString("images"),Base64.DEFAULT);
+                                                int id = jsonObject.getInt("id");
+                                                int number = jsonObject.getInt("number");
+                                                String username = jsonObject.getString("username");
+                                                PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                                                imageCategories.add(pecsImages);
+                                                imageAdapter.notifyDataSetChanged();
                                                 Toast.makeText(MainScreen.this, "Update Success ", Toast.LENGTH_LONG).show();
                                             }catch (JSONException e) {
                                                 e.printStackTrace();
@@ -628,7 +680,8 @@ public class MainScreen extends AppCompatActivity implements AdapterView.OnItemC
                 try {
                     Integer deleteId = idPecs;
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteData";
-                    String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+                    //String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteData";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();

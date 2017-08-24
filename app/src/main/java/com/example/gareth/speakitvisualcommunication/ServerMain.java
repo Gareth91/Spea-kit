@@ -33,7 +33,8 @@ public class ServerMain {
     public void addImageWord(final Context context, String word, String category, String username, String number, Bitmap bitmapImage) {
 
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/insertImage";
-        String BASE_URL = "http://10.0.2.2:5000/project/insertImage";
+//        String BASE_URL = "http://10.0.2.2:5000/project/insertImage";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/insertImage";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -70,7 +71,7 @@ public class ServerMain {
      */
     public void updateImageWord(final Context context, String id, String word, String category, Bitmap bitmapImage) {
 
-        String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateData";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/updateData";
         //String BASE_URL = "http://localhost:5000/project/updateData";
         String url = BASE_URL;
 
@@ -105,7 +106,7 @@ public class ServerMain {
      */
     public void deleteImageWord(final Context context, String id) {
 
-        String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteData";
+        String BASE_URL = "awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteData";
         //String BASE_URL = "http://localhost:5000/project/deleteData";
         String url = BASE_URL;
 
@@ -137,7 +138,7 @@ public class ServerMain {
      */
     public void addUser(final Context context, String username, String accountUsername, Bitmap bitmapImage) {
 
-        String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/insertUser";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/insertUser";
         //String BASE_URL = "http://localhost:5000/project/insertUser";
         String url = BASE_URL;
 
@@ -172,7 +173,7 @@ public class ServerMain {
      */
     public void updateUser(final Context context, String username, Bitmap bitmapImage) {
 
-        String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateUser";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/updateUser";
         //String BASE_URL = "http://localhost:5000/project/updateUser";
         String url = BASE_URL;
 
@@ -205,7 +206,7 @@ public class ServerMain {
      */
     public void deleteUser(final Context context, String username) {
 
-        String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteUser";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteUser";
         //String BASE_URL = "http://localhost:5000/project/deleteUser";
         String url = BASE_URL;
 
@@ -241,7 +242,7 @@ public class ServerMain {
     public void ImageWord(final Context context) {
 
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/insertImage";
-        String BASE_URL = "http://10.0.2.2:5000/project/return";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/return";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -275,17 +276,6 @@ public class ServerMain {
                         byte[] images = jsonobject.getString("images").getBytes();
                         PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
                         list.add(pecsImages);
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
-                        System.out.println("Hello");
                         System.out.println(list.get(0).getWord()+" "+list.get(0).getCategory()+" "+list.get(0).getId()+" "+list.get(0).getNumber()+" "+list.get(0).getUserName()+" "+list.get(0).getImages());
 
 

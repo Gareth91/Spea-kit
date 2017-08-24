@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -91,6 +92,11 @@ public class Uploader extends AppCompatActivity {
     /**
      *
      */
+    private ProgressBar spinner;
+
+    /**
+     *
+     */
     ServerMain serverMain = new ServerMain();
 
     //private static final int ACTION_TAKE_PHOTO_B = 1;
@@ -112,6 +118,9 @@ public class Uploader extends AppCompatActivity {
         //Set back button in the bar at the top of screen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        spinner.setVisibility(View.GONE);
 
         Intent intent = getIntent();
         user = intent.getStringExtra("com.example.gareth.speakitvisualcommunication.User");
@@ -170,15 +179,17 @@ public class Uploader extends AppCompatActivity {
 //                                edtName.getText().toString().trim(),
 //                                imageViewToByte(imageView), categorySelected, user
 //                        );
+                        spinner.setVisibility(View.VISIBLE);
                         serverMain.addImageWord(Uploader.this,edtName.getText().toString(), categorySelected, user, "2",((BitmapDrawable)imageView.getDrawable()).getBitmap());
                         //Toast.makeText(getApplicationContext(), "Added successfully!", Toast.LENGTH_SHORT).show();
-                        Thread.sleep(700);
+                        Thread.sleep(900);
                         if (!categorySelected.equals("Home Page")) {
                             Intent intent = new Intent(Uploader.this, SecondScreen.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", categorySelected);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
+                            spinner.setVisibility(View.GONE);
                             startActivity(intent);
                         } else if (categorySelected.equals("Home Page")){
                             Intent intent = new Intent(Uploader.this, MainScreen.class);
@@ -186,6 +197,7 @@ public class Uploader extends AppCompatActivity {
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.username2", user);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Category", categorySelected);
                             intent.putExtra("com.example.gareth.speakitvisualcommunication.Login",logName);
+                            spinner.setVisibility(View.GONE);
                             startActivity(intent);
                         }
 

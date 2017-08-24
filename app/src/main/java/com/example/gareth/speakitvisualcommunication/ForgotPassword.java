@@ -44,8 +44,8 @@ public class ForgotPassword extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsername";
-                String BASE_URL = "http://10.0.2.2:5000/project/getPassword";
+               // String BASE_URL = "http://10.0.2.2:5000/project/getPassword";
+                String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getPassword";
                 String url = BASE_URL;
 
                 HashMap<String, String> headers  = new HashMap<>();

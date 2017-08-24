@@ -272,8 +272,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         if (user != null) {
             if (category.equals("Favourites")) {
                 //list = ops.getData(category, user);
-                //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getFavourite";
-                String BASE_URL = "http://10.0.2.2:5000/project/getFavourite";
+//                String BASE_URL = "http://10.0.2.2:5000/project/getFavourite";
+                String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getFavourite";
                 String url = BASE_URL;
 
                 HashMap<String, String> headers  = new HashMap<>();
@@ -317,7 +317,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
             } else {
                 //list = ops.getData(category, user);
                 //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/insertImage";
-                String BASE_URL = "http://10.0.2.2:5000/project/return";
+//                String BASE_URL = "http://10.0.2.2:5000/project/return";
+                String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/return";
                 String url = BASE_URL;
 
                 HashMap<String, String> headers  = new HashMap<>();
@@ -412,11 +413,20 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                 if (image.getWord().equals("Action Words")) {
                     Intent actionWords = new Intent(getApplicationContext(), ActionWords.class);
                     startActivity(actionWords);
-                } else if (image.getWord().equals("Add Word")) {
+                } else if (image.getWord().equals("Add Word") && user != null) {
                     Intent upload = new Intent(getApplicationContext(), Uploader.class);
                     upload.putExtra("com.example.gareth.speakitvisualcommunication.User", user);
                     upload.putExtra("com.example.gareth.speakitvisualcommunication.page", category);
                     startActivity(upload);
+                } else if(image.getWord().equals("Add Word") && user == null) {
+                    Toast.makeText(this, "Please select user",Toast.LENGTH_LONG ).show();
+                    if (logName == null) {
+                        Intent logIntent = new Intent(SecondScreen.this, LoginScreen.class);
+                        startActivity(logIntent);
+                    } else if (logName != null) {
+                        Intent userIntent = new Intent(SecondScreen.this, UserSelect.class);
+                        startActivity(userIntent);
+                    }
                 } else {
                     if (image.getNumber() == 1) {
                         Drawable drawable = getResources().getDrawable(image.getImage());
@@ -503,7 +513,7 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     });
                     dialog.show();
                     status = true;
-                } else if (image.getNumber() == 1 && !category.equals("Favourites") && !image.getWord().equals("Action Words") && !image.getWord().equals("Add Word")) {
+                } else if (image.getNumber() == 1 && !category.equals("Favourites") && !image.getWord().equals("Action Words") && !image.getWord().equals("Add Word") && logName != null) {
                     CharSequence[] items = {"Add to Favourites"};
                     AlertDialog.Builder dialog = new AlertDialog.Builder(SecondScreen.this);
 
@@ -517,8 +527,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                         @Override
                         public void onClick(DialogInterface dialog, int item) {
                             if (item == 0) {
-                                BitmapFactory.Options options = new BitmapFactory.Options();
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(image.getImages(), 0, image.getImages().length, options);
+                                Drawable drawable = getResources().getDrawable(image.getImage());
+                                Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
                                 addToFavourites(bitmap, image.getWord());
                             }
                         }
@@ -681,6 +691,47 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
         Button btnUpdate = (Button) dialog.findViewById(R.id.btnUpdate);
         ImageButton back = (ImageButton)dialog.findViewById(R.id.dialogClose);
 
+        //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
+//        String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOne";
+        String url = BASE_URL;
+        Integer imageId = id;
+
+        HashMap<String, String> headers  = new HashMap<>();
+        HashMap<String, String> body  = new HashMap<>();
+
+        body.put("id", imageId.toString());
+
+        String contentType =  "application/json";
+        VolleyRequest request =   new VolleyRequest(SecondScreen.this, VolleyHelp.methodDescription.POST, contentType, url, headers, body);
+
+        request.serviceJsonCall(new VolleyCallBack(){
+            @Override
+            public void onSuccess(String result){
+                System.out.print("CALLBACK SUCCESS: " + result);
+
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(result);
+                    String word = jsonObject.getString("word");
+                    byte [] image= Base64.decode(jsonObject.getString("images"),Base64.DEFAULT);
+                    int id = jsonObject.getInt("id");
+                    int number = jsonObject.getInt("number");
+                    PecsImages pecsImages = new PecsImages(word, image, id, number);
+                    edtName.setText(pecsImages.getWord());
+                    edtName.setTextSize(22);
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(pecsImages.getImages(), 0, pecsImages.getImages().length);
+                    pecsView.setImageBitmap(bitmap);
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onError(ErrorResponse errorResponse){
+                System.out.print("CALLBACK ERROR: " + errorResponse.getMessage());
+            }
+        });
+
         // set width for dialog
         int width = (int) (activity.getResources().getDisplayMetrics().widthPixels * 0.95);
         // set height for dialog
@@ -707,7 +758,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     final Integer userId = id;
                     //serverMain.updateImageWord(SecondScreen.this, userId.toString(), edtName.getText().toString(), category, ((BitmapDrawable)pecsView.getDrawable()).getBitmap());
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateData";
-                    String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+//                    String BASE_URL = "http://10.0.2.2:5000/project/updateData";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/updateData";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
@@ -734,7 +786,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                                     imageAdapter.notifyDataSetChanged();
                                     //PecsImages item = ops.getItem(id);
                                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOne";
-                                    String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+//                                    String BASE_URL = "http://10.0.2.2:5000/project/getOne";
+                                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOne";
                                     String url = BASE_URL;
 
                                     HashMap<String, String> headers  = new HashMap<>();
@@ -749,23 +802,17 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                                         @Override
                                         public void onSuccess(String result){
                                             System.out.print("CALLBACK SUCCESS: " + result);
-
-                                            JSONArray jsonarray = null;
+                                            JSONObject jsonObject = null;
                                             try {
-                                                jsonarray = new JSONArray(result);
-
-                                                for (int loop = 0; loop < jsonarray.length(); loop++) {
-                                                    JSONObject jsonobject = jsonarray.getJSONObject(loop);
-                                                    String word = jsonobject.getString("word");
-                                                    String category = jsonobject.getString("category");
-                                                    int id = jsonobject.getInt("id");
-                                                    String username = jsonobject.getString("username");
-                                                    int number = jsonobject.getInt("number");
-                                                    byte [] images= Base64.decode(jsonobject.getString("images"),Base64.DEFAULT);
-                                                    PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
-                                                    imageWords.add(pecsImages);
-                                                    imageAdapter.notifyDataSetChanged();
-                                                }
+                                                jsonObject = new JSONObject(result);
+                                                String word = jsonObject.getString("word");
+                                                byte [] images = Base64.decode(jsonObject.getString("images"),Base64.DEFAULT);
+                                                int id = jsonObject.getInt("id");
+                                                int number = jsonObject.getInt("number");
+                                                String username = jsonObject.getString("username");
+                                                PecsImages pecsImages = new PecsImages(word, images, id, category, username, number);
+                                                imageWords.add(pecsImages);
+                                                imageAdapter.notifyDataSetChanged();
                                                 Toast.makeText(SecondScreen.this, "Update Success ", Toast.LENGTH_LONG).show();
                                             }catch (JSONException e) {
                                                 e.printStackTrace();
@@ -816,7 +863,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     //ops.deleteData(idPecs);
                     Integer deleteId = idPecs;
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteData";
-                    String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+//                    String BASE_URL = "http://10.0.2.2:5000/project/deleteData";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteData";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
@@ -867,7 +915,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
      */
     public void addToFavourites(Bitmap image, String word) {
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/addFavourite";
-        String BASE_URL = "http://10.0.2.2:5000/project/addFavourite";
+//        String BASE_URL = "http://10.0.2.2:5000/project/addFavourite";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/addFavourite";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -911,7 +960,8 @@ public class SecondScreen extends AppCompatActivity implements AdapterView.OnIte
                     //ops.deleteData(idPecs);
                     Integer deleteId = idPecs;
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/deleteFavourite";
-                    String BASE_URL = "http://10.0.2.2:5000/project/deleteFavourite";
+//                    String BASE_URL = "http://10.0.2.2:5000/project/deleteFavourite";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteFavourite";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();

@@ -136,7 +136,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
         gridView.setAdapter(userAdapter);
 
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsers";
-        String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+//        String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getUsers";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -263,7 +264,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
 
 
         //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
-        String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
+//        String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
+        String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOneUser";
         String url = BASE_URL;
 
         HashMap<String, String> headers  = new HashMap<>();
@@ -329,7 +331,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
 //                    );
                     final Integer userId = id;
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/updateUser";
-                    String BASE_URL = "http://10.0.2.2:5000/project/updateUser";
+//                    String BASE_URL = "http://10.0.2.2:5000/project/updateUser";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/updateUser";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
@@ -354,7 +357,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                                     userAdapter.notifyDataSetChanged();
                                     //PecsImages item = ops.getItem(id);
                                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getOneUser";
-                                    String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
+//                                    String BASE_URL = "http://10.0.2.2:5000/project/getOneUser";
+                                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getOneUser";
                                     String url = BASE_URL;
 
                                     HashMap<String, String> headers  = new HashMap<>();
@@ -584,7 +588,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
             public void onClick(DialogInterface dialog, int which) {
                 try {
                     //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/delete`user";
-                    String BASE_URL = "http://10.0.2.2:5000/project/deleteUser";
+//                    String BASE_URL = "http://10.0.2.2:5000/project/deleteUser";
+                    String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/deleteUser";
                     String url = BASE_URL;
 
                     HashMap<String, String> headers  = new HashMap<>();
@@ -609,7 +614,8 @@ public class UserSelect extends AppCompatActivity implements View.OnClickListene
                                 }
                             }
                             //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getUsers";
-                            String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+//                            String BASE_URL = "http://10.0.2.2:5000/project/getUsers";
+                            String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getUsers";
                             String url = BASE_URL;
 
                             HashMap<String, String> headers  = new HashMap<>();

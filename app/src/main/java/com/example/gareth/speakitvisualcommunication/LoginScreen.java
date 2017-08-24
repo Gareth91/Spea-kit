@@ -72,7 +72,8 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                     Password.getBackground().clearColorFilter();
                 }
                 //String BASE_URL = "http://awsandroid.eu-west-1.elasticbeanstalk.com/project/getAccountDetails";
-                String BASE_URL = "http://10.0.2.2:5000/project/getAccountDetails";
+                //String BASE_URL = "http://10.0.2.2:5000/project/getAccountDetails";
+                String BASE_URL = "http://awsandroid-env.gxjm8mxvzx.eu-west-1.elasticbeanstalk.com/project/getAccountDetails";
                 String url = BASE_URL;
 
                 HashMap<String, String> headers = new HashMap<>();
